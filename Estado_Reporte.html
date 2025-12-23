@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cusco Reporta – Estado de Reportes</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Leaflet (mapa) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <style>
+    :root{
+      --rojo:#dc2626; 
+      --amarillo:#f59e0b; 
+      --verde:#16a34a;
+      --bord:#e5e7eb; 
+      --gris:#f8fafc; 
+      --ink:#0f172a;
+      --radius:12px; 
+      --shadow:0 10px 24px rgba(0,0,0,.08);
+      --burgundy:#7a0000; 
+      --burgundy-2:#8b1e1e;
+    }
+
+    body{
+      margin:0;
+      font:16px/1.5 system-ui,Segoe UI,Roboto,Arial;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      background:#f8fafc;
+      color:#111;
+    }
+
+    /* ====== Topbar ====== */
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 20px;
+      background:#fff;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+      z-index:1000;
+    }
+    .topbar__logo img{height:40px;}
+    .topbar__menu a{
+      margin-left:20px;
+      text-decoration:none;
+      color:#111;
+      font-weight:600;
+    }
+
+    /* Contenedor principal con sidebar + main */
+    .container{
+      display:flex;
+      flex:1;
+      min-height:0;
+    }
+
+    /* Sidebar estilo panel admin */
+    .sidebar{
+      width:250px;
+      background: var(--burgundy);
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      color:white;
+    }
+    .sidebar__user{display:flex; gap:12px; align-items:center; margin-bottom:20px;}
+    .sidebar__avatar i{font-size:40px; color:white;}
+    .sidebar__info h3{margin:0; font-size:1.2rem;}
+    .sidebar__info p{margin:0; font-size:.9rem; color:#f0f0f0;}
+    .sidebar__menu{list-style:none; padding:0; margin-top:20px; display:flex; flex-direction:column; gap:12px;}
+    .sidebar__menu a{text-decoration:none; color:white; font-weight:600; display:flex; align-items:center;}
+    .sidebar__menu a i{width:20px;}
+    .sidebar__menu a.active{color:var(--amarillo);}
+    .sidebar__menu a:hover{color:var(--amarillo);}
+    .logout-btn{margin-top:auto; padding:10px; background:var(--rojo); color:white; border:none; border-radius:10px; cursor:pointer;}
+
+    /* Main content a la derecha */
+    main.main-content{
+      flex:1; 
+      padding:20px; 
+      overflow:auto; 
+      background:white;
+      color:#111;
+    }
+    main h1{color:var(--burgundy); font-weight:900; font-size:2.2rem;}
+
+    /* Layout tabla + detalle */
+    .layout{display:grid;gap:16px;grid-template-columns:2fr 1fr;}
+    .card{background:#fff;border:1px solid var(--bord);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;}
+    .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:8px;}
+    .filters .f{display:flex;flex-direction:column;}
+    label{font-weight:700;font-size:.92rem;}
+    input[type="date"],select,.search{padding:10px 12px;border:1.5px solid #d7dbe0;border-radius:10px;background:#fff;}
+    .btn{background:var(--burgundy);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:800;cursor:pointer;}
+    .btn:hover{background:var(--burgundy-2);}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:10px;border-bottom:1px solid var(--bord);text-align:left;}
+    thead th{background:#f3f4f6;font-weight:800;}
+    tbody tr{cursor:pointer;}
+    tbody tr:hover{background:#fafafa;}
+    tbody tr.selected{background:#fff3f3;outline:2px solid #ef9a9a;}
+    .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:800;font-size:.85rem;color:#fff;}
+    .tag.rojo{background:var(--rojo);}
+    .tag.amarillo{background:var(--amarillo);color:#111;}
+    .tag.verde{background:var(--verde);}
+    .detail .kv{display:grid;grid-template-columns:110px 1fr;gap:6px;font-size:.98rem;margin-bottom:4px;}
+    #map{height:240px;border-radius:10px;border:1px solid var(--bord);margin-top:10px;}
+    @media(max-width:1000px){.layout{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+  <!-- ====== TOPBAR ====== -->
+  <header class="topbar">
+    <div class="topbar__logo">
+      <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
+    </div>
+    <nav class="topbar__menu">
+      <a href="index.html">Inicio</a>
+      <a href="sobre_nosotros.html">Sobre nosotros</a>
+      <a href="ayuda.html">Ayuda</a>
+    </nav>
+  </header>
+
+  <!-- ====== CONTENEDOR PRINCIPAL ====== -->
+  <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="sidebar__info">
+          <h3>Administrador</h3>
+          <p>Administrador</p>
+        </div>
+      </div>
+
+      <ul class="sidebar__menu">
+        <li><a href="perfil_admin.html"><i class="fa-solid fa-id-card"></i> Ver perfil</a></li>
+        <li><a href="Estado_Reporte.html" class="active"><i class="fa-solid fa-list-check"></i> Incidencias/Denuncias</a></li>
+        <li><a href="Mapa_Incidencias_Admin.html"><i class="fa-solid fa-map-location-dot"></i> Mapa de incidencias</a></li>
+        <li><a href="reporte_etadistico.html"><i class="fa-solid fa-chart-column"></i> Reporte estadístico</a></li>
+        <li><a href="gestion_usuarios.html"><i class="fa-solid fa-users-gear"></i> Gestión de usuarios</a></li>
+        <li><a href="#"><i class="fa-solid fa-tags"></i> Gestión de categorías</a></li>
+      </ul>
+
+      <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <h1>Estado de Reportes</h1>
+
+      <div class="layout">
+        <!-- LISTA -->
+        <section class="card">
+          <div class="filters">
+            <div class="f">
+              <label for="fDesde">Desde</label>
+              <input type="date" id="fDesde">
+            </div>
+            <div class="f">
+              <label for="fHasta">Hasta</label>
+              <input type="date" id="fHasta">
+            </div>
+            <div class="f">
+              <label for="fEstado">Estado</label>
+              <select id="fEstado">
+                <option value="TODOS">Todos</option>
+                <option value="Recibido">Recibido</option>
+                <option value="En proceso">En proceso</option>
+                <option value="Solucionado">Solucionado</option>
+              </select>
+            </div>
+            <button id="btnFiltrar" class="btn">Filtrar</button>
+          </div>
+
+          <input id="buscar" class="search" placeholder="Buscar por ID, dirección o tipo de incidente…">
+
+          <table id="tabla">
+            <thead>
+              <tr>
+                <th style="width:80px">ID</th>
+                <th style="width:130px">Fecha</th>
+                <th>Dirección</th>
+                <th style="width:200px">Tipo de Incidente</th>
+                <th style="width:140px">Estado</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </section>
+
+        <!-- DETALLE -->
+        <aside class="card detail">
+          <h3 style="margin:6px 0 10px">Detalle</h3>
+          <div class="kv"><div><b>ID</b></div><div id="d-id">—</div></div>
+          <div class="kv"><div><b>Fecha</b></div><div id="d-fecha">—</div></div>
+          <div class="kv"><div><b>Estado</b></div><div id="d-estado">—</div></div>
+          <div class="kv"><div><b>Tipo</b></div><div id="d-tipo">—</div></div>
+          <div class="kv"><div><b>Dirección</b></div><div id="d-dir">—</div></div>
+          <div class="kv"><div><b>Descripción</b></div><div id="d-desc">—</div></div>
+          <div id="map" aria-label="Mapa referencial"></div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+      window.location.href = "index.html";
+    });
+
+    const DATA = [
+      { id:1052, fecha:'2024-04-20', dir:'Av. El Sol 500', tipo:'Accidente', estado:'Recibido', desc:'Colisión leve, sin heridos.', lat:-13.5185, lng:-71.9769 },
+      { id:1048, fecha:'2024-04-18', dir:'Calle Pumacurco 210', tipo:'Semáforo dañado', estado:'En proceso', desc:'Semáforo intermitente.', lat:-13.5176, lng:-71.9740 },
+      { id:1034, fecha:'2024-04-15', dir:'Jirón Santiago 320', tipo:'Mal estacionamiento', estado:'Solucionado', desc:'Vehículo removido.', lat:-13.5240, lng:-71.9795 },
+      { id:1027, fecha:'2024-04-13', dir:'Calle Mantas 120', tipo:'Obstrucción de vía', estado:'Solucionado', desc:'Limpieza de escombros completada.', lat:-13.5189, lng:-71.9799 },
+      { id:1013, fecha:'2024-04-10', dir:'Av. Garcilaso 1204', tipo:'Señal caída', estado:'En proceso', desc:'Cuadrilla en camino.', lat:-13.5226, lng:-71.9678 },
+      { id:1009, fecha:'2024-04-08', dir:'Calle Hospital 50', tipo:'Accidente', estado:'Recibido', desc:'Atención policial solicitada.', lat:-13.5153, lng:-71.9752 },
+    ];
+
+    const $ = (s,r=document)=>r.querySelector(s);
+    const tbody = $('#tabla tbody');
+
+    const tag = (estado)=>{
+      const cls = estado==='Recibido' ? 'rojo' : estado==='En proceso' ? 'amarillo' : 'verde';
+      return `<span class="tag ${cls}">${estado}</span>`;
+    };
+
+    let selectedId = null;
+    function renderRows(list){
+      tbody.innerHTML = list.map(r=>`
+        <tr data-id="${r.id}">
+          <td>${r.id}</td>
+          <td>${r.fecha}</td>
+          <td>${r.dir}</td>
+          <td>${r.tipo}</td>
+          <td>${tag(r.estado)}</td>
+        </tr>`).join('');
+
+      tbody.querySelectorAll('tr').forEach(tr=>{
+        tr.addEventListener('click', ()=>{
+          selectedId = Number(tr.dataset.id);
+          tbody.querySelectorAll('tr').forEach(x=>x.classList.toggle('selected', Number(x.dataset.id)===selectedId));
+          const row = DATA.find(x=>x.id===selectedId);
+          showDetail(row);
+        });
+      });
+    }
+
+    let map, marker;
+    function initMap(){
+      map = L.map('map', { zoomControl: true }).setView([-13.517, -71.978], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap' }).addTo(map);
+      marker = L.marker([-13.517, -71.978]).addTo(map);
+    }
+
+    function showDetail(r){
+      $('#d-id').textContent    = r.id;
+      $('#d-fecha').textContent = r.fecha;
+      $('#d-estado').innerHTML  = tag(r.estado);
+      $('#d-tipo').textContent  = r.tipo;
+      $('#d-dir').textContent   = r.dir;
+      $('#d-desc').textContent  = r.desc;
+
+      if(map){
+        map.setView([r.lat, r.lng], 16, { animate:true });
+        marker.setLatLng([r.lat, r.lng]).bindPopup(`<b>ID ${r.id}</b><br>${r.tipo}<br>${r.dir}`).openPopup();
+      }
+    }
+
+    function applyFilters(){
+      const d = $('#fDesde').value;
+      const h = $('#fHasta').value;
+      const e = $('#fEstado').value;
+      const q = $('#buscar').value.trim().toLowerCase();
+      let list = DATA.slice();
+      if(d) list = list.filter(x=>x.fecha >= d);
+      if(h) list = list.filter(x=>x.fecha <= h);
+      if(e!=='TODOS') list = list.filter(x=>x.estado===e);
+      if(q) list = list.filter(x=>String(x.id).includes(q)||x.dir.toLowerCase().includes(q)||x.tipo.toLowerCase().includes(q));
+      renderRows(list);
+      if(list.length){
+        selectedId=list[0].id;
+        const first = tbody.querySelector('tr[data-id="'+selectedId+'"]');
+        if(first) first.classList.add('selected');
+        showDetail(list[0]);
+      } else {
+        selectedId=null;
+        $('#d-id').textContent='—'; $('#d-fecha').textContent='—';
+        $('#d-estado').textContent='—'; $('#d-tipo').textContent='—';
+        $('#d-dir').textContent='—'; $('#d-desc').textContent='—';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', ()=>{
+      initMap();
+      $('#btnFiltrar').addEventListener('click', applyFilters);
+      $('#buscar').addEventListener('input', applyFilters);
+      $('#fDesde').addEventListener('change', applyFilters);
+      $('#fHasta').addEventListener('change', applyFilters);
+      $('#fEstado').addEventListener('change', applyFilters);
+      applyFilters();
+    });
+  </script>
+
+</body>
+</html>

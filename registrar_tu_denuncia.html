@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cusco Reporta – Registrar Denuncia</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <!-- ======= HEADER ======= -->
+  <header class="navbar">
+    <div class="navbar__left">
+      <img src="../assents/images/MTC.png" alt="Logo MTC" class="navbar__logo">
+      <img src="../assents/images/CuscoReporta.png" alt="Logo Cusco Reporta" class="navbar__logo">
+    </div>
+
+    <nav class="navbar__menu">
+      <a href="index.html">Inicio</a>
+      <a href="registrar_tu_denuncia.html">Registra tu denuncia</a>
+      <a href="sobre_nosotros.html">Sobre nosotros</a>
+      <a href="iniciar-sesion.html">Iniciar Sesión</a>
+      <a href="ayuda.html">Ayuda</a>
+    </nav>
+  </header>
+
+  <!-- ======= MAIN ======= -->
+  <main class="main">
+    <section class="denuncia">
+      <h1>REGISTRAR DENUNCIA</h1>
+      <p>
+        Puede registrar su denuncia de dos maneras: de forma anónima, la cual seria un <br>
+        reporte de algún incidente o identificándose, la cual seria formalmente. <br>
+        Complete los datos solicitados según la opción que elija.
+      </p>
+
+      <div class="denuncia__opciones">
+        <div class="opcion">
+          <h2>SIN IDENTIFICARME</h2>
+          <div class="icono red">
+            <img src="../assents/anonimo.svg" alt="Anónimo">
+          </div>
+          <a href="ReportarIncidencia.html" class="boton red">Reportar</a>
+        </div>
+
+        <div class="opcion">
+          <h2>IDENTIFICÁNDOME</h2>
+          <div class="icono blue">
+            <img src="../assents/identificado.svg" alt="Identificado">
+          </div>
+          <a href="iniciar-sesion.html" class="boton blue">Denunciar</a>
+        </div>
+      </div>
+
+      <!-- ===== TIPOS DE REPORTES ===== -->
+      <section class="features">
+        <h2>¿Qué puedes reportar?</h2>
+
+        <div class="features__grid">
+
+          <div class="feature feature--red">
+            <img src="../assents/icons/parking.svg" alt="">
+            <h3>Mal estacionamiento</h3>
+            <p>Vehículos bloqueando veredas, rampas o zonas prohibidas.</p>
+          </div>
+
+          <div class="feature feature--red">
+            <img src="../assents/icons/redlight.svg" alt="">
+            <h3>Ignorar luz roja</h3>
+            <p>Peligro directo para peatones y otros conductores.</p>
+          </div>
+
+          <div class="feature feature--red">
+            <img src="../assents/icons/accident.svg" alt="">
+            <h3>Accidentes</h3>
+            <p>Reporta choques, derrapes u otros sucesos urgentes.</p>
+          </div>
+
+          <div class="feature feature--red">
+            <img src="../assents/icons/speed.svg" alt="">
+            <h3>Exceso de velocidad</h3>
+            <p>Identifiquemos juntos a conductores imprudentes.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <p class="confia">¡CONFÍA EN NOSOTROS!</p>
+    </section>
+  </main>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

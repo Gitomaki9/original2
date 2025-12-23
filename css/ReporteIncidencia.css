@@ -1,0 +1,206 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #fff;
+  color: #000;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e5e5e5;
+  padding: 10px 40px;
+}
+
+.topbar__logo img {
+  height: 60px;
+  width: auto;
+}
+
+.topbar__menu a {
+  text-decoration: none;
+  color: #000;
+  margin: 0 15px;
+  font-weight: bold;
+}
+
+.topbar__menu a:hover {
+  color: #b22222;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #7a0000;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.sidebar__avatar {
+  font-size: 2rem;
+}
+
+.sidebar__menu {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar__menu li {
+  margin: 10px 0;
+}
+
+.sidebar__menu a {
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar__menu a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.logout-btn {
+  margin-top: 20px;
+  background-color: #b22222;
+  border: none;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.main-content h1 {
+  text-align: center;
+  font-size: 2.4rem;
+  color: #7a0000;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #7a0000;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.reporte-form {
+  background-color: #f7f7f7;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 50px;
+}
+
+.reporte-form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.reporte-form select,
+.reporte-form textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+}
+
+.file-upload label {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ddd;
+  border-radius: 8px;
+  padding: 8px 15px;
+  cursor: pointer;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.file-upload input {
+  display: none;
+}
+
+#enviar {
+  background-color: #7a0000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+/* ====== DETALLE DE INCIDENCIA ====== */
+.detalle-incidencia {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.detalle-incidencia h2 {
+  color: #7a0000;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.detalle-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.detalle-card p {
+  margin: 10px 0;
+}
+
+.imagenes img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  margin: 15px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.estado {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.estado-botones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  background-color: #b22222;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #8b0000;
+}

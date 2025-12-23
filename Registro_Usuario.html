@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cusco Reporta – Registro de Usuario</title>
+
+  <!-- -->
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <style>
+    :root{
+      --burgundy:#7a0000;
+      --burgundy-2:#8b1e1e;
+      --ink:#0f172a;
+      --muted:#f1f5f9;
+      --ok:#166534; --ok-bg:#e9f8ef;
+      --err:#b00020;
+      --radius:16px;
+      --shadow:0 18px 40px rgba(0,0,0,.18);
+    }
+
+    /* Fondo */
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background:
+        radial-gradient(1200px 400px at 50% -10%, #b32a2a33 0%, transparent 60%),
+        linear-gradient(180deg, #7a0000 0%, #5e0c0c 28%, #3a0b0b 100%);
+      min-height:100dvh;
+    }
+
+    /* Cinta superior */
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      background:#e6e7e9; border-bottom:1px solid #d5d7db;
+      padding:8px 18px; display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:center;
+    }
+    .logos{display:flex; align-items:center; gap:14px}
+    .logos img{height:34px}
+    .nav{display:flex; gap:28px; justify-content:flex-end}
+    .nav a{color:#0f172a; text-decoration:none; font-weight:700}
+    .nav a:hover{color:var(--burgundy)}
+
+    /* Contenedor central */
+    .wrap{display:grid; place-items:center; padding:36px 16px}
+    .card{
+      width:min(920px,96vw);
+      background:#ffffff;
+      border-radius:var(--radius);
+      border:1px solid #e5e7eb;
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .title-area{ text-align:center }
+    .brand-mini{ height:44px; margin-bottom:8px }
+    h1{ margin:6px 0 8px; font-size:28px; color:var(--burgundy); font-weight:900 }
+    .subtitle{ color:#475569; margin:0 0 14px }
+
+    /* Formulario */
+    form{ display:grid; gap:14px; margin-top:6px }
+    .grid{ display:grid; gap:14px; grid-template-columns:1fr 1fr }
+    .grid .span-2{ grid-column:1 / -1 }
+
+    label{ font-weight:700; color:#111827 }
+    input{
+      width:100%; padding:12px 14px;
+      border-radius:12px; border:1.6px solid #d7dbe0; background:#fff;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    input::placeholder{ color:#94a3b8 }
+    input:focus{ outline:none; border-color:var(--burgundy); box-shadow:0 0 0 3px #7a000022 }
+
+    .err{ display:none; color:var(--err); font-size:.9rem; margin-top:2px }
+    .success{
+      display:none; text-align:center; margin-top:8px;
+      background:var(--ok-bg); color:var(--ok); border:1px solid #bde5c8;
+      padding:12px; border-radius:12px; font-weight:700;
+    }
+
+    .actions{ display:flex; gap:12px; justify-content:center; margin-top:6px }
+    .btn{
+      appearance:none; border:none; cursor:pointer; font-weight:800;
+      padding:12px 18px; border-radius:999px; color:#fff;
+      background:linear-gradient(180deg,#8e1a1a 0%, #7a0000 100%);
+      box-shadow:0 10px 18px rgba(122,0,0,.22);
+    }
+    .btn:hover{ filter:brightness(1.03) }
+    .btn.secondary{ background:#374151 }
+
+    .disclaimer{ text-align:center; color:#64748b; font-size:.92rem; margin-top:10px }
+
+    /* Responsive */
+    @media (max-width:760px){ .grid{ grid-template-columns:1fr } }
+  </style>
+</head>
+<body>
+
+  <!-- CINTA SUPERIOR -->
+  <header class="topbar">
+    <div class="logos">
+      <img src="../assents/images/MTC.png" alt="Ministerio de Transportes y Comunicaciones">
+      <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta">
+    </div>
+    <nav class="nav">
+      <a href="index.html">Inicio</a>
+      <a href="panel.html">Registra tu denuncia</a>
+      <a href="#">Sobre nosotros</a>
+      <a href="iniciar-sesion.html">Iniciar Sesión</a>
+      <a href="#">Ayuda</a>
+    </nav>
+  </header>
+
+  <!-- CONTENIDO -->
+  <main class="wrap">
+    <section class="card">
+      <div class="title-area">
+        <img class="brand-mini" src="../assents/images/CuscoReporta.png" alt="Cusco Reporta">
+        <h1>Registro de Usuario</h1>
+        <p class="subtitle">Completa tus datos personales para poder reportar incidencias.</p>
+      </div>
+
+      <form id="formRegistro" novalidate>
+        <div class="grid">
+          <div>
+            <label for="nombre">Nombre completo *</label>
+            <input id="nombre" name="nombre" type="text" placeholder="Ej. Juan Pérez" style="width: 90%" required>
+            <div id="e-nombre" class="err">Ingrese su nombre completo.</div>
+          </div>
+
+          <div>
+            <label for="dni">DNI *</label>
+            <input id="dni" name="dni" type="text" inputmode="numeric" maxlength="8" placeholder="8 dígitos" style="width: 90%" required>
+            <div id="e-dni" class="err">DNI inválido (8 dígitos numéricos).</div>
+          </div>
+
+          <div>
+            <label for="correo">Correo electrónico *</label>
+            <input id="correo" name="correo" type="email" placeholder="usuario@correo.com" style="width: 90%"required>
+            <div id="e-correo" class="err">Correo electrónico inválido.</div>
+          </div>
+
+          <div>
+            <label for="telefono">Teléfono *</label>
+            <!-- EXACTAMENTE 9 dígitos, sin espacios -->
+            <input id="telefono" name="telefono" type="text" inputmode="numeric" maxlength="9" placeholder="9 dígitos" style="width: 90%" required>
+            <div id="e-telefono" class="err">Teléfono inválido (9 dígitos numéricos).</div>
+          </div>
+
+          <div class="span-2">
+            <label for="direccion">Dirección *</label>
+            <input id="direccion" name="direccion" type="text" placeholder="Av. Los Incas 123, Cusco" style="width: 95%" required>
+            <div id="e-direccion" class="err">Ingrese su dirección.</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn">Registrarme</button>
+          <a href="iniciar-sesion.html" class="btn secondary">Ya tengo cuenta</a>
+        </div>
+
+        <div id="ok" class="success">✅ Registro exitoso. ¡Ahora puedes reportar incidencias!</div>
+      </form>
+
+      <p class="disclaimer">
+        Al registrarte aceptas los términos y autorizas el uso de tus datos para fines de atención de incidencias de tránsito.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    // Sanitiza inputs numéricos (evita espacios y letras) y limita longitud
+    const onlyDigits = (el, max) => {
+      el.addEventListener('input', () => {
+        el.value = el.value.replace(/\D/g,'').slice(0, max);
+      });
+    };
+    onlyDigits(document.getElementById('dni'), 8);
+    onlyDigits(document.getElementById('telefono'), 9);
+
+    // Validación y mensaje OK
+    const f = document.getElementById('formRegistro');
+    const ok = document.getElementById('ok');
+
+    const show = (id, on) => document.getElementById(id).style.display = on ? 'block' : 'none';
+
+    f.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      ['e-nombre','e-dni','e-correo','e-telefono','e-direccion'].forEach(id=>show(id,false));
+
+      const nombre = f.nombre.value.trim();
+      const dni = f.dni.value.trim();
+      const correo = f.correo.value.trim();
+      const tel = f.telefono.value.trim();
+      const dir = f.direccion.value.trim();
+
+      let pass = true;
+      if(!nombre){ show('e-nombre',true); pass=false; }
+      if(!/^\d{8}$/.test(dni)){ show('e-dni',true); pass=false; }
+      if(!/^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$/.test(correo)){ show('e-correo',true); pass=false; }
+      if(!/^\d{9}$/.test(tel)){ show('e-telefono',true); pass=false; }
+      if(!dir){ show('e-direccion',true); pass=false; }
+
+      if(pass){
+        // Redirigir a la página de confirmación
+ 	 window.location.href = "registro_exitoso.html";
+      }
+    });
+  </script>
+</body>
+</html>

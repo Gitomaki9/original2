@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consultar Denuncias - Cusco Reporta</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar">
+    <!-- Mismo header que tu index.html -->
+    <div class="navbar__left">
+      <img src="assents/images/MTC.png" alt="Logo MTC" class="navbar__logo">
+      <img src="assents/images/CuscoReporta.png" alt="Logo Cusco Reporta" class="navbar__logo">
+    </div>
+    <nav class="navbar__menu">
+      <a href="index.html">Inicio</a>
+      <a href="consultas.html">Consultar Denuncias</a>
+      <a href="registrar_tu_denuncia.html">Registrar Denuncia</a>
+    </nav>
+  </header>
+
+  <main class="main" style="padding: 2rem;">
+    <h1>📋 Denuncias Registradas</h1>
+    
+    <!-- Filtros -->
+    <div class="filtros" style="margin: 20px 0;">
+      <select id="filtro-estado">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en proceso">En proceso</option>
+        <option value="resuelto">Resuelto</option>
+      </select>
+      <button onclick="cargarDenuncias()">Filtrar</button>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div id="resultados">
+      <p>Cargando denuncias...</p>
+    </div>
+  </main>
+
+  <!-- Cargar Supabase JS -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  
+  <!-- Nuestro código para consultar -->
+  <script>
+    async function cargarDenuncias() {
+      const filtroEstado = document.getElementById('filtro-estado').value
+      const resultadosDiv = document.getElementById('resultados')
+      
+      resultadosDiv.innerHTML = '<p>Cargando...</p>'
+      
+      try {
+        // 1. CONSTRUIR CONSULTA
+        let query = window.supabaseClient
+          .from('denuncias')
+          .select('*')
+          .order('creado_en', { ascending: false })
+        
+        // 2. APLICAR FILTRO SI HAY
+        if (filtroEstado) {
+          query = query.eq('estado', filtroEstado)
+        }
+        
+        // 3. EJECUTAR CONSULTA
+        const { data: denuncias, error } = await query
+        
+        if (error) throw error
+        
+        // 4. MOSTRAR RESULTADOS
+        if (denuncias.length === 0) {
+          resultadosDiv.innerHTML = '<p>No hay denuncias con esos filtros.</p>'
+          return
+        }
+        
+        const html = `
+          <table border="1" style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="background:#8B0000; color:white;">
+                <th>ID</th><th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${denuncias.map(d => `
+                <tr>
+                  <td>${d.id}</td>
+                  <td><strong>${d.titulo}</strong><br>${d.descripcion || ''}</td>
+                  <td>${d.categoria || '-'}</td>
+                  <td><span class="estado" style="
+                    background:${d.estado === 'pendiente' ? '#ffcccc' : d.estado === 'en proceso' ? '#fff3cd' : '#d4edda'};
+                    padding:3px 10px;
+                    border-radius:10px;
+                  ">${d.estado}</span></td>
+                  <td>${new Date(d.creado_en).toLocaleDateString()}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:10px;"><strong>Total:</strong> ${denuncias.length} denuncias</p>
+        `
+        
+        resultadosDiv.innerHTML = html
+        
+      } catch (error) {
+        resultadosDiv.innerHTML = `<p style="color:red;">Error al cargar: ${error.message}</p>`
+        console.error('Error Supabase:', error)
+      }
+    }
+    
+    // Cargar denuncias al abrir la página
+    document.addEventListener('DOMContentLoaded', cargarDenuncias)
+  </script>
+</body>
+</html>

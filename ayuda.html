@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cusco Reporta – Ayuda</title>
+  <link rel="stylesheet" href="../css/sobre_nosotros.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Forzar todo vertical */
+    .section-vertical, .features-column, .feature {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      text-align: left !important;
+      margin-bottom: 20px;
+      float: none !important;
+    }
+
+    .feature img {
+      margin-bottom: 10px;
+    }
+
+    /* ===== SECCIONES DE AYUDA ===== */
+    .help-section {
+      background: #fff;
+      border-radius: 14px;
+      padding: 35px 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+
+    .help-section h2 {
+      color: #8B1E1E;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .help-section p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .help-section a {
+      color: #b71c1c;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .help-section a:hover {
+      text-decoration: underline;
+      color: #7a1a1a;
+    }
+
+    .faq-item {
+      border-top: 1px solid #ddd;
+      padding: 10px 0;
+    }
+
+    .faq-item h3 {
+      font-size: 1.2rem;
+      color: #7a1a1a;
+      cursor: pointer;
+      margin: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-item h3::after {
+      content: '+';
+      font-weight: 700;
+      transition: transform 0.2s;
+    }
+
+    .faq-item.active h3::after {
+      content: '-';
+      transform: rotate(180deg);
+    }
+
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding-left: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ===== HEADER (igual al original) ===== -->
+  <header class="navbar">
+    <div class="navbar__left">
+      <img src="../assents/images/MTC.png" alt="Logo MTC" class="navbar__logo">
+      <img src="../assents/images/CuscoReporta.png" alt="Logo Cusco Reporta" class="navbar__logo">
+    </div>
+
+    <nav class="navbar__menu">
+      <a href="index.html">Inicio</a>
+      <a href="registrar_tu_denuncia.html">Registra tu denuncia</a>
+      <a href="sobre_nosotros.html">Sobre nosotros</a>
+      <a href="iniciar-sesion.html">Iniciar Sesión</a>
+      <a href="ayuda.html">Ayuda</a>
+    </nav>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+
+    <section class="hero hero--red section-vertical">
+      <h2>Ayuda y Soporte</h2>
+      <p>Encuentra información útil sobre cómo reportar infracciones de tránsito, consultar leyes y contactar al equipo de soporte.</p>
+    </section>
+
+    <section class="help-section section-vertical">
+      <h2>Cómo reportar</h2>
+      <p>Puedes reportar de forma anónima o identificándote. Asegúrate de incluir detalles claros sobre ubicación, tipo de infracción y evidencia si la tienes.</p>
+    </section>
+
+    <section class="help-section section-vertical">
+      <h2>Leyes y Normativas</h2>
+      <p>Consulta las leyes de tránsito vigentes en los siguientes enlaces oficiales:</p>
+      <ul>
+        <li><a href="https://www.gob.pe/mtc" target="_blank">Ministerio de Transportes y Comunicaciones</a></li>
+        <li><a href="https://www.gob.pe/mtc/normas" target="_blank">Normas de Tránsito</a></li>
+      </ul>
+    </section>
+
+    <section class="help-section section-vertical faq">
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq-item">
+        <h3>¿Puedo reportar de forma anónima?</h3>
+        <div class="faq-content">
+          <p>Sí, nuestro sistema garantiza la confidencialidad de tus datos.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <h3>¿Qué tipo de incidentes puedo reportar?</h3>
+        <div class="faq-content">
+          <p>Mal estacionamiento, exceso de velocidad, accidentes, conductores imprudentes y cualquier infracción que afecte la seguridad vial.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <h3>¿Cómo contactar al soporte?</h3>
+        <div class="faq-content">
+          <p>Escribe a <a href="mailto:soporte@cuscoreporta.pe">soporte@cuscoreporta.pe</a> o utiliza la sección de contacto.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="help-section section-vertical">
+      <h2>Contacto rápido</h2>
+      <p>Teléfono: (084) 123-4567</p>
+      <p>Email: <a href="mailto:soporte@cuscoreporta.pe">soporte@cuscoreporta.pe</a></p>
+      <p>Horario de atención: Lunes a Viernes, 08:00 - 17:00</p>
+    </section>
+
+  </main>
+
+  <script>
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const header = item.querySelector('h3');
+      header.addEventListener('click', () => {
+        item.classList.toggle('active');
+        const content = item.querySelector('.faq-content');
+        if (item.classList.contains('active')) {
+          content.style.maxHeight = content.scrollHeight + 'px';
+        } else {
+          content.style.maxHeight = 0;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

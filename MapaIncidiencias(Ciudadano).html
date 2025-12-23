@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapa de Incidencias - Cusco Reporta</title>
+
+    <!-- Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <!-- FontAwesome para los íconos de la barra -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+      /* ====== RESET GENERAL ====== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background-color: #f8f9fa;
+        color: #222;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+      }
+
+      /* ====== TOPBAR (estilo nuevo con íconos) ====== */
+      .topbar {
+        width: 100%;
+        background-color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 60px;
+        border-bottom: 1px solid #ccc;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .topbar__logo img {
+        height: 50px;
+      }
+
+      .topbar__menu a {
+        text-decoration: none;
+        color: #000;
+        font-weight: 600;
+        margin-left: 20px;
+      }
+
+      .topbar__menu a:hover {
+        color: #b71c1c;
+      }
+
+      /* ====== CONTENEDOR PRINCIPAL ====== */
+      .container {
+        display: flex;
+        min-height: calc(100vh - 80px);
+      }
+
+      /* ====== SIDEBAR (estilo nuevo con íconos) ====== */
+      .sidebar {
+        width: 270px;
+        background: linear-gradient(180deg, #8b1919 0%, #6e0f0f 100%);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 20px 0;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar__user {
+        text-align: left;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .sidebar__avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #bbb, #e0e0e0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6e0f0f;
+        font-size: 28px;
+      }
+
+      .sidebar__info h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .sidebar__info p {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
+      .sidebar__menu {
+        list-style: none;
+        padding: 0;
+        margin-top: 0;
+      }
+
+      .sidebar__menu li {
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .sidebar__menu li a {
+        display: flex;
+        align-items: center;
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 25px;
+        width: 100%;
+      }
+
+      .sidebar__menu li a i {
+        width: 20px;
+      }
+
+      .sidebar__menu li a span {
+        margin-left: 8px;
+      }
+
+      .sidebar__menu li a:hover,
+      .sidebar__menu li a.active {
+        background-color: #a52525;
+        border-radius: 5px;
+      }
+
+      .logout-btn {
+        background: linear-gradient(90deg, #a11b1b, #8b0000);
+        border: none;
+        color: white;
+        padding: 12px 0;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: auto;
+        margin-left: 20px;
+        margin-right: 20px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .logout-btn:hover {
+        background: linear-gradient(90deg, #b61e1e, #9b0f0f);
+        transform: translateY(-1px);
+      }
+
+      /* ====== CONTENIDO PRINCIPAL ====== */
+      .main-content {
+        flex: 1;
+        background: #f9f9f9;
+        padding: 40px;
+        animation: fadeIn 0.6s ease both;
+      }
+
+      .main-content h1 {
+        color: #8b1919;
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+        text-align: center;
+      }
+
+      /* ====== ESTILOS EXISTENTES DEL MAPA, FILTROS Y ESTADÍSTICAS ====== */
+      .filtro-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        background-color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .filtro-container label {
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .filtro-container select {
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        background-color: #f8f9fa;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .stats-container {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .stat-card {
+        flex: 1;
+        min-width: 150px;
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .stat-card.total {
+        border-top: 4px solid #3498db;
+      }
+
+      .stat-card.accidente {
+        border-top: 4px solid #e74c3c;
+      }
+
+      .stat-card.bache {
+        border-top: 4px solid #f39c12;
+      }
+
+      .stat-card.incendio {
+        border-top: 4px solid #e67e22;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: #7f8c8d;
+      }
+
+      #map {
+        height: 500px;
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+      }
+
+      .legend {
+        background-color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        margin-top: 20px;
+      }
+
+      .legend h3 {
+        margin-bottom: 10px;
+        color: #2c3e50;
+        font-size: 18px;
+      }
+
+      .legend-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+      }
+
+      .accidente-color {
+        background-color: #e74c3c;
+      }
+
+      .bache-color {
+        background-color: #f39c12;
+      }
+
+      .incendio-color {
+        background-color: #e67e22;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        color: #fff;
+        background-color: #b22222;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn.red {
+        background-color: #8b0000;
+      }
+
+      .btn.red:hover {
+        background-color: #a40000;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .sidebar__menu li,
+      .topbar {
+        animation: fadeIn 0.6s ease both;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+        }
+
+        .stats-container {
+          flex-direction: column;
+        }
+
+        .legend-items {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .topbar {
+          padding: 10px 20px;
+        }
+
+        .topbar__menu a {
+          margin-left: 10px;
+        }
+
+        .main-content {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ====== TOPBAR CON ÍCONOS ====== -->
+    <div class="topbar">
+      <div class="topbar__logo">
+        <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo" />
+      </div>
+      <nav class="topbar__menu">
+        <a href="index.html">Inicio</a>
+        <a href="sobre_nosotros.html">Sobre nosotros</a>
+        <a href="ayuda.html">Ayuda</a>
+      </nav>
+    </div>
+
+    <!-- ====== CONTENEDOR PRINCIPAL ====== -->
+    <div class="container">
+      <!-- ====== SIDEBAR CON ÍCONOS ====== -->
+      <aside class="sidebar">
+        <div class="sidebar__user">
+          <div class="sidebar__avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="sidebar__info">
+            <h3>Jose Pérez</h3>
+            <p>Ciudadano</p>
+          </div>
+        </div>
+
+        <ul class="sidebar__menu">
+          <li>
+            <a href="perfil_usuario.html"><i class="fa-solid fa-id-card"></i><span>Ver perfil</span></a>
+          </li>
+          <li>
+            <a href="ReportarIncidencia.html"><i class="fa-solid fa-pen-to-square"></i><span>Reportar</span></a>
+          </li>
+          <li>
+            <a href="registrar_Denuncia.html"><i class="fa-solid fa-triangle-exclamation"></i><span>Denunciar</span></a>
+          </li>
+          <li>
+            <a href="lista_incidencias.html"><i class="fa-solid fa-list-check"></i><span>Estado de reportes</span></a>
+          </li>
+          <li>
+            <a href="MapaIncidiencias(Ciudadano).html" class="active"><i class="fa-solid fa-map-location-dot"></i><span>Mapa de incidencias</span></a>
+          </li>
+          <li>
+            <a href="notificaciones.html"><i class="fa-solid fa-bell"></i><span>Notificaciones</span></a>
+          </li>
+        </ul>
+
+        <button class="logout-btn" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+        </button>
+      </aside>
+
+      <!-- ====== CONTENIDO PRINCIPAL ====== -->
+      <main class="main-content">
+        <h1>MAPA DE INCIDENCIAS</h1>
+
+        <div class="filtro-container">
+          <label for="tipo">Filtrar por tipo:</label>
+          <select id="tipo">
+            <option value="todos">Todos los incidentes</option>
+            <option value="accidente">Accidentes</option>
+            <option value="bache">Baches</option>
+            <option value="incendio">Incendios</option>
+          </select>
+        </div>
+
+        <div class="stats-container">
+          <div class="stat-card total">
+            <div class="stat-value" id="total-count">4</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-card accidente">
+            <div class="stat-value" id="accidente-count">1</div>
+            <div class="stat-label">Accidentes</div>
+          </div>
+          <div class="stat-card bache">
+            <div class="stat-value" id="bache-count">2</div>
+            <div class="stat-label">Baches</div>
+          </div>
+          <div class="stat-card incendio">
+            <div class="stat-value" id="incendio-count">1</div>
+            <div class="stat-label">Incendios</div>
+          </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="legend">
+          <h3>Leyenda</h3>
+          <div class="legend-items">
+            <div class="legend-item">
+              <div class="legend-color accidente-color"></div>
+              <span>Accidente de tránsito</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color bache-color"></div>
+              <span>Bache en la vía</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color incendio-color"></div>
+              <span>Incendio reportado</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Script del mapa -->
+    <script>
+      const map = L.map("map").setView([-13.5171, -71.9784], 13);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      const incidencias = [
+        { tipo: "accidente", coords: [-13.515, -71.975], descripcion: "Accidente de tránsito en Av. de la Cultura", fecha: "2023-11-15 08:30" },
+        { tipo: "bache", coords: [-13.517, -71.982], descripcion: "Bache profundo en calle San Andrés", fecha: "2023-11-14 14:20" },
+        { tipo: "incendio", coords: [-13.519, -71.97], descripcion: "Incendio en vivienda – Urb. Ttio", fecha: "2023-11-15 10:45" },
+        { tipo: "bache", coords: [-13.52, -71.984], descripcion: "Hueco en la vía frente al mercado", fecha: "2023-11-13 16:10" },
+      ];
+
+      const iconos = {
+        accidente: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/2554/2554961.png", iconSize: [35,35], iconAnchor: [17,34], popupAnchor:[0,-30] }),
+        bache: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/1161/1161388.png", iconSize: [35,35], iconAnchor: [17,34], popupAnchor:[0,-30] }),
+        incendio: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/482/482059.png", iconSize: [35,35], iconAnchor: [17,34], popupAnchor:[0,-30] }),
+      };
+
+      let marcadores = [];
+
+      function mostrarMarcadores(filtro){
+        marcadores.forEach(m=>map.removeLayer(m));
+        marcadores=[];
+        incidencias.filter(i=>filtro==="todos"||i.tipo===filtro).forEach(i=>{
+          const marker=L.marker(i.coords,{icon: iconos[i.tipo]}).bindPopup(`
+            <div style="min-width:200px;">
+              <h3 style="margin:0 0 10px; color:#2c3e50; text-transform:capitalize;">${i.tipo}</h3>
+              <p style="margin:0 0 8px;">${i.descripcion}</p>
+              <p style="margin:0; font-size:0.9em; color:#7f8c8d;">Reportado: ${i.fecha}</p>
+            </div>`).addTo(map);
+          marcadores.push(marker);
+        });
+        actualizarEstadisticas(filtro);
+      }
+
+      function actualizarEstadisticas(filtro){
+        const total=document.getElementById("total-count");
+        const accidentes=document.getElementById("accidente-count");
+        const baches=document.getElementById("bache-count");
+        const incendios=document.getElementById("incendio-count");
+
+        if(filtro==="todos"){
+          total.textContent=incidencias.length;
+          accidentes.textContent=incidencias.filter(i=>i.tipo==="accidente").length;
+          baches.textContent=incidencias.filter(i=>i.tipo==="bache").length;
+          incendios.textContent=incidencias.filter(i=>i.tipo==="incendio").length;
+        }else{
+          const filtradas=incidencias.filter(i=>i.tipo===filtro);
+          total.textContent=filtradas.length;
+          accidentes.textContent=filtro==="accidente"?filtradas.length:0;
+          baches.textContent=filtro==="bache"?filtradas.length:0;
+          incendios.textContent=filtro==="incendio"?filtradas.length:0;
+        }
+      }
+
+      mostrarMarcadores("todos");
+      document.getElementById("tipo").addEventListener("change", e=>mostrarMarcadores(e.target.value));
+
+      L.circle([-13.5171, -71.9784], { color:"#8b1919", fillColor:"#8b1919", fillOpacity:0.1, radius:1500 })
+        .addTo(map)
+        .bindPopup("Centro de Cusco");
+
+      document.getElementById("logoutBtn").addEventListener("click", function() {
+        window.location.href = "index.html";
+      });
+    </script>
+  </body>
+</html>

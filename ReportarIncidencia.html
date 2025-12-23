@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportar Incidencia - Cusco Reporta</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+  <!-- ====== NAVBAR SUPERIOR ====== -->
+  <header class="topbar">
+    <div class="topbar__logo">
+      <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
+    </div>
+    <nav class="topbar__menu">
+      <a href="index.html">Inicio</a>
+      <a href="sobre_nosotros.html">Sobre nosotros</a>
+      <a href="ayuda.html">Ayuda</a>
+    </nav>
+  </header>
+
+  <!-- ====== CONTENEDOR PRINCIPAL ====== -->
+  <div class="container">
+
+    <!-- ====== SIDEBAR ====== -->
+    <aside class="sidebar" style="display:flex; flex-direction:column; justify-content:flex-start;">
+      <div class="sidebar__user" style="margin-bottom:10px;">
+        <div class="sidebar__avatar"><i class="fa-solid fa-user"></i></div>
+        <div class="sidebar__info">
+          <h3>Jose Pérez</h3>
+          <p>Ciudadano</p>
+        </div>
+      </div>
+
+      <ul class="sidebar__menu" style="margin-top: 0; padding-top: 0; list-style: none;">
+        <li style="display: flex; align-items: flex-start;">
+          <a href="perfil_usuario.html">
+            <i class="fa-solid fa-id-card" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Ver perfil</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="ReportarIncidencia.html"class="active">
+            <i class="fa-solid fa-pen-to-square" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Reportar</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="registrar_Denuncia.html">
+            <i class="fa-solid fa-triangle-exclamation" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Denunciar</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="lista_incidencias.html">
+            <i class="fa-solid fa-list-check" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Estado de reportes</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="MapaIncidiencias(Ciudadano).html">
+            <i class="fa-solid fa-map-location-dot" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Mapa de incidencias</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="notificaciones.html">
+            <i class="fa-solid fa-bell" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Notificaciones</span>
+          </a>
+        </li>
+      </ul>
+
+      <button class="logout-btn" id="logoutBtn" style="margin-top:auto;">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+      </button>
+    </aside>
+
+    <!-- ====== CONTENIDO PRINCIPAL ====== -->
+    <main class="main-content">
+
+      <h1><i class="fa-solid fa-pen-to-square"></i> Reportar una incidencia</h1>
+      <p style="color:#555;">Complete los campos para registrar una incidencia.</p>
+
+      <div class="denuncia-form" style="margin-top:20px;">
+        <h2 class="form-titulo">Datos del reporte</h2>
+
+        <div class="formulario">
+
+          <div class="fila">
+            <div class="campo">
+              <label>Título de la incidencia</label>
+              <input id="titulo" type="text" placeholder="Ej: Bache en la calle...">
+            </div>
+
+            <div class="campo">
+              <label>Categoría</label>
+              <select id="categoria">
+                <option value="">Seleccione una categoría</option>
+                <option>Alumbrado público</option>
+                <option>Limpieza y residuos</option>
+                <option>Seguridad ciudadana</option>
+                <option>Vías públicas</option>
+                <option>Emergencias</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fila">
+            <div class="campo" style="flex:1;">
+              <label>Descripción</label>
+              <textarea id="descripcion" rows="4" placeholder="Describa la incidencia..."></textarea>
+            </div>
+          </div>
+
+          <label style="margin-top:15px;">Adjuntar imágenes</label>
+          <input id="imagenes" type="file" multiple accept="image/*">
+
+          <button id="btnEnviar" class="btn-principal" style="margin-top:20px;">Enviar reporte</button>
+
+        </div>
+      </div>
+
+      <!-- ====== DETALLE GENERADO ====== -->
+      <section id="detalle" style="display:none; margin-top:40px;">
+        <h2>Detalle del reporte</h2>
+
+        <div class="detalle-card">
+          <p><strong>Título:</strong> <span id="d-titulo"></span></p>
+          <p><strong>Categoría:</strong> <span id="d-categoria"></span></p>
+
+          <p><strong>Descripción:</strong></p>
+          <p id="d-descripcion"></p>
+
+          <div>
+            <strong>Imágenes:</strong>
+            <div id="d-imagenes" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;"></div>
+          </div>
+
+          <div class="estado" style="margin-top:20px;">
+            <h3>Estado: <span id="estado-texto" style="color:#b22222;">Pendiente</span></h3>
+
+            <div style="margin-top:10px;">
+              <button onclick="cambiarEstado('Pendiente')">Pendiente</button>
+              <button onclick="cambiarEstado('En proceso')">En proceso</button>
+              <button onclick="cambiarEstado('Resuelto')">Resuelto</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ====== SCRIPT ====== -->
+  <script>
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    const btn = document.getElementById("btnEnviar");
+    const detalle = document.getElementById("detalle");
+
+    btn.addEventListener("click", () => {
+      const titulo = document.getElementById("titulo").value;
+      const categoria = document.getElementById("categoria").value;
+      const descripcion = document.getElementById("descripcion").value;
+      const imagenes = document.getElementById("imagenes").files;
+
+      if (!titulo || !categoria || !descripcion) {
+        alert("Completa todos los campos obligatorios.");
+        return;
+      }
+
+      document.getElementById("d-titulo").textContent = titulo;
+      document.getElementById("d-categoria").textContent = categoria;
+      document.getElementById("d-descripcion").textContent = descripcion;
+
+      const contenedor = document.getElementById("d-imagenes");
+      contenedor.innerHTML = "";
+
+      [...imagenes].forEach(file => {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.style.width = "150px";
+        img.style.borderRadius = "10px";
+        contenedor.appendChild(img);
+      });
+
+      detalle.style.display = "block";
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    function cambiarEstado(estado) {
+      const t = document.getElementById("estado-texto");
+      t.textContent = estado;
+
+      if (estado === "Pendiente") t.style.color = "#b22222";
+      else if (estado === "En proceso") t.style.color = "#d38a00";
+      else t.style.color = "#008000";
+    }
+  </script>
+
+</body>
+</html>

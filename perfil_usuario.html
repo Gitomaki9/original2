@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de Usuario - Cusco Reporta</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <!-- NAVBAR SUPERIOR -->
+  <header class="topbar">
+    <div class="topbar__logo">
+      <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
+    </div>
+    <nav class="topbar__menu">
+      <a href="index.html">Inicio</a>
+      <a href="sobre_nosotros.html">Sobre nosotros</a>
+      <a href="ayuda.html">Ayuda</a>
+    </nav>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="container">
+    <!-- ====== SIDEBAR IZQUIERDO (ajustada como en el panel principal) ====== -->
+    <aside class="sidebar" style="display: flex; flex-direction: column; justify-content: flex-start;">
+      <div class="sidebar__user" style="margin-bottom: 10px;">
+        <div class="sidebar__avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="sidebar__info">
+          <h3>Jose Pérez</h3>
+          <p>Ciudadano</p>
+        </div>
+      </div>
+
+      <!-- Menú del usuario -->
+      <ul class="sidebar__menu" style="margin-top: 0; padding-top: 0; list-style: none;">
+        <li style="display: flex; align-items: flex-start;">
+          <a href="perfil_usuario.html" class="active">
+            <i class="fa-solid fa-id-card" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Ver perfil</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="ReportarIncidencia.html">
+            <i class="fa-solid fa-pen-to-square" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Reportar</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="registrar_Denuncia.html">
+            <i class="fa-solid fa-triangle-exclamation" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Denunciar</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="lista_incidencias.html">
+            <i class="fa-solid fa-list-check" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Estado de reportes</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="MapaIncidiencias(Ciudadano).html">
+            <i class="fa-solid fa-map-location-dot" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Mapa de incidencias</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="notificaciones.html">
+            <i class="fa-solid fa-bell" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Notificaciones</span>
+          </a>
+        </li>
+      </ul>
+
+      <button class="logout-btn" id="logoutBtn" style="margin-top: auto;">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+      </button>
+    </aside>
+
+    <!-- CONTENIDO PERFIL -->
+    <main class="main-content">
+      <section class="perfil-container">
+        <h1>Perfil del Usuario</h1>
+        <form id="formPerfil" class="perfil-form">
+          <div class="perfil-avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+
+          <div class="perfil-campos">
+            <label>Nombre completo</label>
+            <input type="text" class="campo-perfil" value="Jose Pérez" disabled>
+
+            <label>Correo electrónico</label>
+            <input type="email" class="campo-perfil" value="joseperez@gmail.com" disabled>
+
+            <label>Documento de identidad</label>
+            <input type="text" class="campo-perfil" value="74851236" disabled>
+
+            <label>Teléfono</label>
+            <input type="text" class="campo-perfil" value="987654321" disabled>
+
+            <label>Dirección</label>
+            <input type="text" class="campo-perfil" value="Av. El Sol 123 - Cusco" disabled>
+          </div>
+
+          <button type="button" id="btnEditarPerfil" class="btn">Editar Perfil</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Script principal -->
+  <script src="../js/main.js"></script>
+</body>
+</html>

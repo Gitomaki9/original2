@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - Reporta Cusco</title>
+    <style>
+        :root {
+            --primary-color: #942A2A;    /* Rojo principal */
+            --secondary-color: #700505;  /* Rojo oscuro */
+            --accent-color: #e67e22;     /* Naranja para botones */
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .recovery-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .recovery-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .recovery-header {
+            background: var(--primary-color);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            margin-bottom: 15px;
+        }
+
+        .logo-image {
+            height: 60px;
+            width: auto;
+        }
+
+        .recovery-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .recovery-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .recovery-body {
+            padding: 30px;
+        }
+
+        .recovery-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .recovery-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .step-text {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .step.active .step-text {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(148, 42, 42, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+
+        .btn-accent:hover {
+            background-color: #d35400;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .info-text {
+            background: #e7f3ff;
+            border-left: 4px solid var(--secondary-color);
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            color: var(--success-color);
+            margin-bottom: 15px;
+        }
+
+        .code-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+        }
+
+        .code-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .resend-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .resend-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .back-to-login a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-to-login a:hover {
+            text-decoration: underline;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength.weak .password-strength-bar {
+            width: 33%;
+            background: var(--danger-color);
+        }
+
+        .password-strength.medium .password-strength-bar {
+            width: 66%;
+            background: var(--accent-color);
+        }
+
+        .password-strength.strong .password-strength-bar {
+            width: 100%;
+            background: var(--success-color);
+        }
+
+        .password-requirements {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .requirement.met {
+            color: var(--success-color);
+        }
+
+        .requirement::before {
+            content: '✗';
+            margin-right: 5px;
+        }
+
+        .requirement.met::before {
+            content: '✓';
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 480px) {
+            .recovery-body {
+                padding: 20px;
+            }
+            
+            .recovery-steps::before {
+                left: 20%;
+                right: 20%;
+            }
+            
+            .step-text {
+                font-size: 0.75rem;
+            }
+            
+            .code-input {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="recovery-container">
+        <div class="recovery-card">
+            <div class="recovery-header">
+                <div class="logo">
+                    <!-- Logo de Reporta Cusco -->
+
+                    <img src="../assents/images/CuscoReporta.png" alt="Reporta Cusco" class="logo-image">
+
+                    
+                    <!-- Si no tienes logo, puedes usar texto -->
+                    <!-- <h1>Reporta Cusco</h1> -->
+                </div>
+                <h1>Recuperar Contraseña</h1>
+                <p>Sigue los pasos para recuperar tu acceso</p>
+            </div>
+            
+            <div class="recovery-body">
+                <!-- Indicador de pasos -->
+                <div class="recovery-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-text">Verificar Email</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-text">Código de Verificación</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-text">Nueva Contraseña</div>
+                    </div>
+                </div>
+
+                <!-- Paso 1: Ingresar email -->
+                <div class="form-step active" id="formStep1">
+                    <div class="info-text">
+                        Ingresa tu dirección de correo electrónico para recibir un código de verificación.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" placeholder="ejemplo@correo.com" required>
+                    </div>
+                    
+                    <button class="btn" onclick="nextStep(2)">Enviar Código</button>
+                    
+                    <div class="back-to-login">
+                        <a href="iniciar-sesion.html">← Volver al Inicio de Sesión</a>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Ingresar código -->
+                <div class="form-step" id="formStep2">
+                    <div class="info-text">
+                        Hemos enviado un código de 6 dígitos a tu correo electrónico. Ingresa el código a continuación.
+                    </div>
+                    
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 1)">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 2)">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 3)">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 4)">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 5)">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 6)">
+                    </div>
+                    
+                    <div class="resend-link">
+                        ¿No recibiste el código? <a href="#" onclick="resendCode()">Reenviar código</a>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="prevStep(1)">Atrás</button>
+                        <button class="btn" onclick="nextStep(3)">Verificar Código</button>
+                    </div>
+                </div>
+
+                <!-- Paso 3: Nueva contraseña -->
+                <div class="form-step" id="formStep3">
+                    <div class="info-text">
+                        Crea una nueva contraseña segura para tu cuenta.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">Nueva Contraseña</label>
+                        <input type="password" id="newPassword" placeholder="Ingresa tu nueva contraseña" oninput="checkPasswordStrength()" required>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                        <div class="password-requirements" id="passwordRequirements">
+                            <div class="requirement" id="reqLength">Al menos 8 caracteres</div>
+                            <div class="requirement" id="reqUppercase">Una letra mayúscula</div>
+                            <div class="requirement" id="reqLowercase">Una letra minúscula</div>
+                            <div class="requirement" id="reqNumber">Un número</div>
+                            <div class="requirement" id="reqSpecial">Un carácter especial</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmar Contraseña</label>
+                        <input type="password" id="confirmPassword" placeholder="Repite tu nueva contraseña" oninput="checkPasswordMatch()" required>
+                        <div id="passwordMatch" style="font-size: 0.85rem; margin-top: 5px;"></div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="prevStep(2)">Atrás</button>
+                        <button class="btn" onclick="completeRecovery()">Cambiar Contraseña</button>
+                    </div>
+                </div>
+
+                <!-- Paso 4: Éxito -->
+                <div class="form-step" id="formStep4">
+                    <div class="success-message">
+                        <div class="success-icon">✓</div>
+                        <h3>¡Contraseña Restablecida!</h3>
+                        <p>Tu contraseña ha sido cambiada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.</p>
+                        <button class="btn" onclick="goToLogin()" style="margin-top: 20px;">Iniciar Sesión</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navegación entre pasos
+        function nextStep(step) {
+            // Ocultar todos los pasos
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Mostrar el paso actual
+            document.getElementById('formStep' + step).classList.add('active');
+            
+            // Actualizar indicador de pasos
+            document.querySelectorAll('.step').forEach((s, index) => {
+                if (index + 1 < step) {
+                    s.classList.add('completed');
+                    s.classList.remove('active');
+                } else if (index + 1 === step) {
+                    s.classList.add('active');
+                    s.classList.remove('completed');
+                } else {
+                    s.classList.remove('active', 'completed');
+                }
+            });
+        }
+
+        function prevStep(step) {
+            nextStep(step);
+        }
+
+        // Navegación entre inputs de código
+        function moveToNext(input, nextIndex) {
+            if (input.value.length === 1) {
+                const nextInput = document.querySelectorAll('.code-input')[nextIndex];
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        }
+
+        // Reenviar código
+        function resendCode() {
+            alert('Se ha reenviado el código de verificación a tu correo electrónico.');
+        }
+
+        // Verificar fortaleza de contraseña
+        function checkPasswordStrength() {
+            const password = document.getElementById('newPassword').value;
+            const strengthBar = document.getElementById('passwordStrength');
+            const requirements = document.getElementById('passwordRequirements');
+            
+            // Reiniciar
+            strengthBar.className = 'password-strength';
+            document.querySelectorAll('.requirement').forEach(req => {
+                req.classList.remove('met');
+            });
+            
+            let strength = 0;
+            
+            // Longitud
+            if (password.length >= 8) {
+                strength++;
+                document.getElementById('reqLength').classList.add('met');
+            }
+            
+            // Mayúsculas
+            if (/[A-Z]/.test(password)) {
+                strength++;
+                document.getElementById('reqUppercase').classList.add('met');
+            }
+            
+            // Minúsculas
+            if (/[a-z]/.test(password)) {
+                strength++;
+                document.getElementById('reqLowercase').classList.add('met');
+            }
+            
+            // Números
+            if (/[0-9]/.test(password)) {
+                strength++;
+                document.getElementById('reqNumber').classList.add('met');
+            }
+            
+            // Caracteres especiales
+            if (/[^A-Za-z0-9]/.test(password)) {
+                strength++;
+                document.getElementById('reqSpecial').classList.add('met');
+            }
+            
+            // Actualizar barra de fortaleza
+            if (strength > 0) {
+                if (strength <= 2) {
+                    strengthBar.classList.add('weak');
+                } else if (strength <= 4) {
+                    strengthBar.classList.add('medium');
+                } else {
+                    strengthBar.classList.add('strong');
+                }
+            }
+        }
+
+        // Verificar coincidencia de contraseñas
+        function checkPasswordMatch() {
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const matchElement = document.getElementById('passwordMatch');
+            
+            if (confirmPassword === '') {
+                matchElement.textContent = '';
+                matchElement.style.color = '';
+            } else if (password === confirmPassword) {
+                matchElement.textContent = '✓ Las contraseñas coinciden';
+                matchElement.style.color = 'var(--success-color)';
+            } else {
+                matchElement.textContent = '✗ Las contraseñas no coinciden';
+                matchElement.style.color = 'var(--danger-color)';
+            }
+        }
+
+        // Completar recuperación
+        function completeRecovery() {
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden. Por favor, verifica.');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('La contraseña debe tener al menos 8 caracteres.');
+                return;
+            }
+            
+            // Simular éxito
+            nextStep(4);
+        }
+
+        // Ir al login
+        function goToLogin() {
+            window.location.href = 'index.html';
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enfocar el primer input de código automáticamente
+            document.querySelector('.code-input')?.focus();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+/* --------------------------------------------- */
+/*  ESTILOS PARA LA PÁGINA "SOBRE NOSOTROS"     */
+/* --------------------------------------------- */
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== HERO (Rojo bonito y centrado) ===== */
+.hero--red {
+  display: flex;
+  flex-direction: column;  /* vertical */
+  align-items: center;
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #7b1616, #b71b1b);
+  color: white;
+  border-radius: 14px;
+  margin: 40px auto;
+  width: 90%;
+  max-width: 1100px;
+}
+
+.hero--red h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.hero--red p {
+  max-width: 800px;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+/* ===== SECCIONES (Quiénes somos / Misión / Visión) ===== */
+.main section {
+  width: 90%;
+  max-width: 1100px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: row; /* horizontal */
+  align-items: center;
+  gap: 40px;
+  background: #ffffff;
+  padding: 35px 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.main section:nth-child(even) {
+  flex-direction: row-reverse; /* alterna lado de texto e imagen */
+}
+
+.main section h2 {
+  color: #8B1E1E;
+  font-size: 2rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.main section p {
+  max-width: 500px;
+  color: #333;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* ===== FEATURES ===== */
+.features {
+  width: 90%;
+  max-width: 1100px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #7a1a1a;
+  margin-bottom: 35px;
+}
+
+/* Tarjetas en horizontal */
+.features-column {
+  display: flex;
+  flex-direction: row; /* horizontal */
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+}
+
+.feature, .feature--red {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1 1 30%;
+  min-width: 250px;
+  background: #fff;
+  border-left: 6px solid #8B1E1E;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: .2s;
+}
+
+.feature--red:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.15);
+}
+
+.feature--red img {
+  width: 65px;
+  margin-bottom: 12px;
+}
+
+.feature--red h3 {
+  font-size: 1.4rem;
+  color: #8B1E1E;
+  margin-bottom: 10px;
+}
+
+.feature--red p {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* ====== RESET GENERAL ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ====== NAVBAR ====== */
+.navbar {
+  width: 100%;
+  background-color: #d9d9d9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 50px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.navbar__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__logo {
+  height: 48px;
+  object-fit: contain;
+}
+
+.navbar__menu {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.navbar__menu a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #111;
+  transition: color 0.3s ease;
+}
+
+.navbar__menu a:hover {
+  color: #b71c1c;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e5e5e5;
+  padding: 10px 40px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  height: 40px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #000;
+  margin: 0 15px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #b22222;
+}
+
+/* ====== SECCIÓN PRINCIPAL ====== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+}
+
+.denuncia {
+  text-align: center;
+  max-width: 950px;
+  background: #fff;
+  padding: 60px 40px;
+  border-radius: 20px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+}
+
+.denuncia h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.denuncia p {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 50px;
+  line-height: 1.6;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 20px;
+  }
+
+  .navbar__menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .main section {
+    flex-direction: column; /* vuelve vertical en móvil */
+    text-align: center;
+  }
+
+  .features-column {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .feature {
+    width: 100%;
+  }
+}

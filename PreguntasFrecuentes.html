@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ayuda — Preguntas Frecuentes y Tutoriales - Cusco Reporta</title>
+
+    <!-- tu CSS base -->
+    <link rel="stylesheet" href="../css/styles.css" />
+
+    <!-- Estilos adicionales (mínimos, para esta página) -->
+    <style>
+      /* Layout interno para que encaje con tu sidebar/topbar */
+      .page-main {
+        display: flex;
+        gap: 24px;
+        padding: 30px;
+        align-items: flex-start;
+      }
+
+      .help-content {
+        flex: 1;
+        background: transparent;
+      }
+
+      .breadcrumb {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 18px;
+      }
+
+      .help-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .help-header h2 {
+        color: #8b1919;
+        letter-spacing: 1px;
+        margin: 0;
+      }
+
+      .search-box {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .search-box input[type="search"] {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        min-width: 260px;
+      }
+
+      /* FAQ accordion (uses <details>) */
+      .faq-list {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      details {
+        background: #fff;
+        padding: 14px 16px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+      }
+
+      summary {
+        list-style: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #222;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      summary::-webkit-details-marker {
+        display: none;
+      } /* hide default arrow */
+
+      .chevron {
+        transition: transform 0.25s ease;
+        transform-origin: 50% 50%;
+        display: inline-block;
+      }
+
+      details[open] .chevron {
+        transform: rotate(180deg);
+      }
+
+      details p {
+        margin-top: 10px;
+        color: #444;
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+
+      /* Tutorials column */
+      .right-col {
+        width: 340px;
+        min-width: 260px;
+      }
+
+      .tutorials {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .tutorial-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+      }
+
+      .tutorial-card h4 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+        color: #2c3e50;
+      }
+
+      .tutorial-card p {
+        margin: 0 0 8px;
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      .tutorial-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .btn-small {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: none;
+        background: #8b1919;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: #555;
+        border: 1px solid #e6e6e6;
+      }
+
+      /* responsive */
+      @media (max-width: 900px) {
+        .page-main {
+          flex-direction: column;
+          padding: 16px;
+        }
+        .right-col {
+          width: 100%;
+          order: 2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar (usa tu topbar global si existe) -->
+    <div class="topbar" style="position: sticky; top: 0; z-index: 30">
+      <div class="topbar__logo">
+        <img
+          src="../assents/images/CuscoReporta.png"
+          alt="Logo Cusco Reporta"
+          style="height: 44px"
+        />
+      </div>
+      <nav class="topbar__menu" style="gap: 18px">
+        <a href="#">Inicio</a>
+        <a href="#">Sobre nosotros</a>
+        <a href="#">Contáctenos</a>
+        <a href="#">Ayuda</a>
+      </nav>
+    </div>
+
+    <!-- Contenedor principal con sidebar (si ya lo tienes este <aside> puede quitarse o integrarse) -->
+    <div class="container" style="display: flex; gap: 0">
+      <!-- SIDEBAR: si ya existe en tu base, mantenla igual; la dejo mínima para contexto -->
+      <aside
+        class="sidebar"
+        style="
+          width: 260px;
+          background: linear-gradient(180deg, #8b1919, #6e0f0f);
+          color: #fff;
+          padding: 20px;
+          min-height: calc(100vh - 70px);
+          box-sizing: border-box;
+        "
+      >
+        <div
+          class="sidebar__user"
+          style="
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+          "
+        >
+          <div
+            class="sidebar__avatar"
+            style="
+              width: 56px;
+              height: 56px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: #f0f0f0;
+              color: #6e0f0f;
+              font-weight: 700;
+            "
+          >
+            JP
+          </div>
+          <div class="sidebar__info">
+            <h3 style="margin: 0; font-size: 1rem">Jose Pérez</h3>
+            <p style="margin: 0; font-size: 0.85rem; opacity: 0.9">Ciudadano</p>
+          </div>
+        </div>
+
+        <ul
+          class="sidebar__menu"
+          style="list-style: none; padding: 0; margin-top: 8px"
+        >
+          <li style="margin-bottom: 8px">
+            <a
+              href="#"
+              style="
+                color: rgba(255, 255, 255, 0.95);
+                text-decoration: none;
+                display: block;
+                padding: 10px 12px;
+                border-radius: 6px;
+              "
+              >Ver perfil</a
+            >
+          </li>
+          <li style="margin-bottom: 8px">
+            <a
+              href="#"
+              style="
+                color: rgba(255, 255, 255, 0.95);
+                text-decoration: none;
+                display: block;
+                padding: 10px 12px;
+                border-radius: 6px;
+              "
+              >Reportar</a
+            >
+          </li>
+          <li style="margin-bottom: 8px">
+            <a
+              href="#"
+              style="
+                color: rgba(255, 255, 255, 0.95);
+                text-decoration: none;
+                display: block;
+                padding: 10px 12px;
+                border-radius: 6px;
+              "
+              >Estado de reportes</a
+            >
+          </li>
+          <li style="margin-bottom: 8px">
+            <a
+              href="#"
+              class="active"
+              style="
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff;
+                text-decoration: none;
+                display: block;
+                padding: 10px 12px;
+                border-radius: 6px;
+              "
+              >Mapa de incidencias</a
+            >
+          </li>
+          <li style="margin-bottom: 8px">
+            <a
+              href="#"
+              style="
+                color: rgba(255, 255, 255, 0.95);
+                text-decoration: none;
+                display: block;
+                padding: 10px 12px;
+                border-radius: 6px;
+              "
+              >Notificaciones</a
+            >
+          </li>
+        </ul>
+
+        <div style="margin-top: auto">
+          <button
+            class="logout-btn"
+            style="
+              width: 100%;
+              padding: 10px;
+              border-radius: 8px;
+              border: none;
+              background: linear-gradient(90deg, #a11b1b, #8b0000);
+              color: #fff;
+              font-weight: 600;
+              cursor: pointer;
+            "
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      </aside>
+
+      <!-- CONTENIDO -->
+      <main
+        class="help-content"
+        style="padding: 28px; min-height: calc(100vh - 40px)"
+      >
+        <!-- Breadcrumb + header -->
+        <div class="breadcrumb">
+          Inicio &raquo; Ayuda &raquo; Preguntas frecuentes
+        </div>
+
+        <div class="help-header">
+          <div>
+            <h2>Preguntas frecuentes y tutoriales</h2>
+            <div style="color: #666; margin-top: 6px">
+              ¿Tienes dudas? Encuentra respuestas rápidas o sigue un tutorial
+              paso a paso.
+            </div>
+          </div>
+
+          <div class="search-box" aria-hidden="false">
+            <input
+              id="faq-search"
+              type="search"
+              placeholder="Buscar pregunta o palabra clave..."
+              aria-label="Buscar FAQ"
+            />
+            <button
+              class="btn-small btn-ghost"
+              id="clear-search"
+              title="Limpiar búsqueda"
+            >
+              Limpiar
+            </button>
+          </div>
+        </div>
+
+        <div class="page-main">
+          <!-- columna izquierda: FAQ -->
+          <section style="flex: 1">
+            <h3 style="margin: 0 0 10px; color: #2c3e50">
+              Preguntas frecuentes
+            </h3>
+
+            <div class="faq-list" id="faq-list">
+              <!-- Ejemplos de FAQ (details/summary para accesibilidad) -->
+              <details>
+                <summary>
+                  ¿Cómo reporto una incidencia desde la web?
+                  <span class="chevron">▾</span>
+                </summary>
+                <p>
+                  Para reportar una incidencia, ve a la sección
+                  <strong>Reportar</strong>, completa el formulario con la
+                  descripción, ubicación y una foto (opcional). Haz clic en
+                  "Enviar" y recibirás un número de seguimiento.
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  ¿Puedo editar o eliminar un reporte enviado?
+                  <span class="chevron">▾</span>
+                </summary>
+                <p>
+                  Sí — solo si estás autenticado y eres el autor del reporte.
+                  Accede a <strong>Estado de reportes</strong>, selecciona el
+                  reporte y usa las opciones "Editar" o "Eliminar". Los
+                  administradores pueden tomar otras acciones.
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  ¿Cómo funciona el mapa de incidencias y los filtros?
+                  <span class="chevron">▾</span>
+                </summary>
+                <p>
+                  El mapa muestra marcadores por tipo (accidentes, baches,
+                  incendios). Usa el filtro "Filtrar por tipo" para mostrar solo
+                  las incidencias que te interesan. También puedes hacer clic en
+                  un marcador para ver detalles.
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  ¿Cómo recibir notificaciones sobre mis reportes?
+                  <span class="chevron">▾</span>
+                </summary>
+                <p>
+                  Activa las notificaciones en tu perfil y configura alertas por
+                  correo o en la app móvil (si está disponible). También puedes
+                  seguir el estado desde la sección "Estado de reportes".
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  ¿Los datos del mapa son en tiempo real?
+                  <span class="chevron">▾</span>
+                </summary>
+                <p>
+                  En la versión demo los datos son simulados. En la
+                  implementación real, el mapa se actualiza con datos del
+                  servidor y/o sensores en tiempo real (dependiendo de la
+                  integración).
+                </p>
+              </details>
+
+              <!-- Agrega más detalles según necesites -->
+            </div>
+          </section>
+
+          <!-- columna derecha: Tutorials / guía rápida -->
+          <aside class="right-col">
+            <div class="tutorials" aria-labelledby="tutorials-title">
+              <h3 id="tutorials-title" style="margin-top: 0">
+                Tutoriales rápidos
+              </h3>
+
+              <div class="tutorial-card">
+                <h4>Cómo reportar paso a paso</h4>
+                <p>
+                  Guía rápida para crear un reporte con foto y ubicación exacta.
+                </p>
+                <div class="tutorial-actions">
+                  <button class="btn-small" onclick="toggleTutorial('t1')">
+                    Ver tutorial
+                  </button>
+                  <button class="btn-small btn-ghost" onclick="downloadGuide()">
+                    Descargar PDF
+                  </button>
+                </div>
+
+                <div
+                  id="t1"
+                  style="display: none; margin-top: 10px; color: #444"
+                >
+                  <ol style="padding-left: 18px; margin: 0">
+                    <li>Inicia sesión en tu cuenta.</li>
+                    <li>
+                      Ve a <strong>Reportar</strong> y completa los campos.
+                    </li>
+                    <li>
+                      Selecciona la ubicación en el mapa o ingresa la dirección.
+                    </li>
+                    <li>
+                      Adjunta una foto (opcional) y haz clic en
+                      <strong>Enviar</strong>.
+                    </li>
+                  </ol>
+                </div>
+              </div>
+
+              <div class="tutorial-card">
+                <h4>Interpretar el mapa de calor y clústeres</h4>
+                <p>
+                  Explicación breve de colores, filtros y cómo identificar zonas
+                  críticas.
+                </p>
+                <div class="tutorial-actions">
+                  <button class="btn-small" onclick="toggleTutorial('t2')">
+                    Ver tutorial
+                  </button>
+                </div>
+
+                <div
+                  id="t2"
+                  style="display: none; margin-top: 10px; color: #444"
+                >
+                  <p style="margin: 0">
+                    Zonas con mayor concentración de reportes aparecen
+                    resaltadas. Usa el filtro por tipo para segmentar.
+                  </p>
+                </div>
+              </div>
+
+              <div class="tutorial-card">
+                <h4>Preguntas frecuentes sobre privacidad</h4>
+                <p>Qué datos se recogen y cómo se usan.</p>
+                <div class="tutorial-actions">
+                  <button class="btn-small" onclick="toggleTutorial('t3')">
+                    Ver
+                  </button>
+                </div>
+
+                <div
+                  id="t3"
+                  style="display: none; margin-top: 10px; color: #444"
+                >
+                  <p style="margin: 0">
+                    Tu información se utiliza para gestión de incidencias y no
+                    se comparte sin tu consentimiento.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <!-- Script pequeño para búsqueda y toggles -->
+    <script>
+      // Búsqueda simple en FAQs (filtra por texto en summary y p)
+      (function () {
+        const searchInput = document.getElementById("faq-search");
+        const faqList = document.getElementById("faq-list");
+
+        function filterFAQs(term) {
+          const q = term.trim().toLowerCase();
+          const details = faqList.querySelectorAll("details");
+          details.forEach((d) => {
+            const text = (
+              d.querySelector("summary").innerText +
+              " " +
+              (d.querySelector("p")?.innerText || "")
+            ).toLowerCase();
+            if (!q || text.includes(q)) {
+              d.style.display = "";
+            } else {
+              d.style.display = "none";
+            }
+          });
+        }
+
+        searchInput.addEventListener("input", (e) =>
+          filterFAQs(e.target.value)
+        );
+        document
+          .getElementById("clear-search")
+          .addEventListener("click", () => {
+            searchInput.value = "";
+            filterFAQs("");
+            searchInput.focus();
+          });
+      })();
+
+      // Mostrar / ocultar contenido de tutoriales
+      function toggleTutorial(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display =
+          el.style.display === "none" || el.style.display === ""
+            ? "block"
+            : "none";
+      }
+
+      // Acción ficticia: descargar guía
+      function downloadGuide() {
+        alert("Descarga simulada: aquí podrías enlazar el PDF real.");
+      }
+    </script>
+  </body>
+</html>

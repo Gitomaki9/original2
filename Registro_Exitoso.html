@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro Exitoso - Cusco Reporta</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(180deg, #7a0000, #500000);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .card {
+      background: #fff;
+      color: #333;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+      animation: fadeIn 0.8s ease;
+    }
+    .card img {
+      height: 60px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      color: #7a0000;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #555;
+      margin-bottom: 24px;
+    }
+    .btn {
+      background: #7a0000;
+      color: white;
+      text-decoration: none;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .btn:hover {
+      background: #a00000;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta">
+    <h1>¡Registro Exitoso!</h1>
+    <p>Tu cuenta ha sido creada correctamente. Serás redirigido para registrar una denuncia.</p>
+    <a href="Registrar_Denuncia.html" class="btn">Ir ahora</a>
+  </div>
+
+  <script>
+    // Redirige automáticamente en 4 segundos
+    setTimeout(() => {
+      window.location.href = "Registrar_Denuncia.html";
+    }, 4000);
+  </script>
+</body>
+</html>
