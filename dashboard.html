@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard - Cusco Reporta</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    button { background: #8b0000; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎉 ¡Login Exitoso!</h1>
+    <p>Has iniciado sesión correctamente.</p>
+    <button onclick="cerrarSesion()">Cerrar Sesión</button>
+    <a href="registrar_Denuncia.html" style="display: block; margin-top: 20px;">
+      Ir a Registrar Denuncia
+    </a>
+  </div>
+  
+  <script>
+    function cerrarSesion() {
+      sessionStorage.clear();
+      window.location.href = 'iniciar-sesion.html';
+    }
+  </script>
+</body>
+</html>
