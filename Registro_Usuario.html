@@ -148,97 +148,115 @@
         </div>
       </div>
 
-      <form id="formRegistro" class="form">
-        <div class="form-group">
-          <label for="regNombre" class="form-label">
-            <i class="fas fa-user"></i> Nombre Completo *
-          </label>
-          <input type="text" id="regNombre" class="form-input" 
-                 placeholder="Ej: Juan Pérez García" required>
-        </div>
+     <!-- En Registro_Usuario.html -->
+<form id="formRegistro" class="form">
+  <div class="form-group">
+    <label for="regNombre" class="form-label">
+      <i class="fas fa-user"></i> Nombre Completo *
+    </label>
+    <input type="text" id="regNombre" class="form-input" 
+           placeholder="Juan Pérez García" required>
+  </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="regEmail" class="form-label">
-              <i class="fas fa-envelope"></i> Email *
-            </label>
-            <input type="email" id="regEmail" class="form-input" 
-                   placeholder="tu@email.com" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="regDni" class="form-label">
-              <i class="fas fa-id-card"></i> DNI (Opcional)
-            </label>
-            <input type="text" id="regDni" class="form-input" 
-                   placeholder="12345678" maxlength="8">
-          </div>
-        </div>
+  <div class="form-group">
+    <label for="regEmail" class="form-label">
+      <i class="fas fa-envelope"></i> Email *
+    </label>
+    <input type="email" id="regEmail" class="form-input" 
+           placeholder="tu@email.com" required>
+  </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="regTelefono" class="form-label">
-              <i class="fas fa-phone"></i> Teléfono (Opcional)
-            </label>
-            <input type="tel" id="regTelefono" class="form-input" 
-                   placeholder="123456789">
-          </div>
-          
-          <div class="form-group">
-            <label for="regDireccion" class="form-label">
-              <i class="fas fa-map-marker-alt"></i> Dirección (Opcional)
-            </label>
-            <input type="text" id="regDireccion" class="form-input" 
-                   placeholder="Av. El Sol 123">
-          </div>
-        </div>
+  <div class="form-group">
+    <label for="regPassword" class="form-label">
+      <i class="fas fa-lock"></i> Contraseña *
+    </label>
+    <input type="password" id="regPassword" class="form-input" 
+           placeholder="Mínimo 6 caracteres" minlength="6" required>
+  </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="regPassword" class="form-label">
-              <i class="fas fa-lock"></i> Contraseña *
-            </label>
-            <input type="password" id="regPassword" class="form-input" 
-                   placeholder="Mínimo 6 caracteres" minlength="6" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="regConfirmPassword" class="form-label">
-              <i class="fas fa-lock"></i> Confirmar Contraseña *
-            </label>
-            <input type="password" id="regConfirmPassword" class="form-input" 
-                   placeholder="Repite tu contraseña" minlength="6" required>
-          </div>
-        </div>
+  <div class="form-group">
+    <label for="regConfirmPassword" class="form-label">
+      <i class="fas fa-lock"></i> Confirmar Contraseña *
+    </label>
+    <input type="password" id="regConfirmPassword" class="form-input" 
+           placeholder="Repite tu contraseña" minlength="6" required>
+  </div>
 
-        <div class="form-group">
-          <label style="font-size: 0.9rem; color: #666; display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="regTerminos" required>
-            Acepto los <a href="terminos.html" style="color: #8b0000;">Términos y Condiciones</a> y 
-            <a href="privacidad.html" style="color: #8b0000;">Política de Privacidad</a>
-          </label>
-        </div>
+  <div class="form-group">
+    <label style="font-size: 0.9rem; color: #666;">
+      <input type="checkbox" id="regTerminos" required>
+      Acepto los términos y condiciones
+    </label>
+  </div>
 
-        <button type="submit" class="submit-btn">
-          <i class="fas fa-user-plus"></i> Crear Cuenta
-        </button>
+  <button type="submit" class="submit-btn" id="btnRegistro">
+    <i class="fas fa-user-plus"></i> Crear Cuenta
+  </button>
+</form>
 
-        <div class="links">
-          <a href="iniciar-sesion.html">
-            <i class="fas fa-sign-in-alt"></i> ¿Ya tienes cuenta? Inicia Sesión
-          </a>
-          <a href="index.html">
-            <i class="fas fa-home"></i> ← Volver al inicio
-          </a>
-        </div>
-      </form>
-
-      <div class="footer-msg">¡TUS DATOS ESTÁN PROTEGIDOS!</div>
-    </section>
-  </main>
-
-  <!-- Script de registro -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="../js/login.js"></script>
-</body>
-</html>
+<script src="../js/auth.js"></script>
+<script>
+  document.getElementById('formRegistro').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const nombre = document.getElementById('regNombre').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    const btnRegistro = document.getElementById('btnRegistro');
+    
+    // Validaciones
+    if (!nombre || !email || !password) {
+      window.supabaseAuth.mostrarNotificacion('Completa todos los campos', 'error');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      window.supabaseAuth.mostrarNotificacion('Las contraseñas no coinciden', 'error');
+      return;
+    }
+    
+    if (password.length < 6) {
+      window.supabaseAuth.mostrarNotificacion('La contraseña debe tener al menos 6 caracteres', 'error');
+      return;
+    }
+    
+    // Cambiar estado del botón
+    const originalHTML = btnRegistro.innerHTML;
+    btnRegistro.innerHTML = '<i class="fas fa-spinner auth-loading"></i> Registrando...';
+    btnRegistro.disabled = true;
+    
+    try {
+      const resultado = await window.supabaseAuth.registrarUsuario(
+        email, 
+        password, 
+        { nombre: nombre }
+      );
+      
+      if (resultado.success) {
+        window.supabaseAuth.mostrarNotificacion(
+          '¡Registro exitoso! Revisa tu email para verificar.', 
+          'success'
+        );
+        
+        // Redirigir a login después de 3 segundos
+        setTimeout(() => {
+          window.location.href = `iniciar-sesion.html?registro=exitoso&email=${encodeURIComponent(email)}`;
+        }, 3000);
+        
+      } else {
+        throw new Error(resultado.error);
+      }
+      
+    } catch (error) {
+      window.supabaseAuth.mostrarNotificacion(
+        `Error: ${error.message}`, 
+        'error'
+      );
+      
+    } finally {
+      btnRegistro.innerHTML = originalHTML;
+      btnRegistro.disabled = false;
+    }
+  });
+</script>
