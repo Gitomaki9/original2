@@ -172,44 +172,113 @@
         </div>
       </div>
 
-      <form id="formLogin" class="form">
-        <div class="form-group">
-          <label for="username" class="form-label">Nombre de Usuario o Email</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            class="form-input"
-            placeholder="usuario@ejemplo.com"
-            required
-          />
-        </div>
+<!-- En tu iniciar-sesion.html, actualiza el formulario -->
+<form id="formLogin" class="form">
+  <div class="form-group">
+    <label for="email" class="form-label">
+      <i class="fas fa-envelope"></i> Correo Electrónico
+    </label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      class="form-input"
+      placeholder="tu@email.com"
+      required
+    />
+  </div>
 
-        <div class="form-group">
-          <label for="password" class="form-label">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="form-input"
-            placeholder="••••••••"
-            required
-          />
-        </div>
+  <div class="form-group">
+    <label for="password" class="form-label">
+      <i class="fas fa-lock"></i> Contraseña
+    </label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      class="form-input"
+      placeholder="••••••••"
+      required
+    />
+  </div>
 
-        <button type="submit" class="submit-btn">🔐 Iniciar Sesión</button>
+  <button type="submit" class="submit-btn" id="btnLogin">
+    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+  </button>
 
-        <div class="links">
-          <a href="recuperar_contrasena.html">Recuperar contraseña</a>
-          <a href="index.html">← Volver al inicio</a>
-        </div>
-      </form>
+  <div class="links">
+    <a href="recuperar_contrasena.html">
+      <i class="fas fa-key"></i> ¿Olvidaste tu contraseña?
+    </a>
+    <a href="Registro_Usuario.html">
+      <i class="fas fa-user-plus"></i> Crear cuenta nueva
+    </a>
+    <a href="index.html">
+      <i class="fas fa-home"></i> ← Volver al inicio
+    </a>
+  </div>
+</form>
 
-      <div class="footer-msg">¡CONFÍA EN NOSOTROS!</div>
-    </section>
-  </main>
-
-  <!-- JS real de login (backend) -->
-  <script src="../js/login.js"></script>
-</body>
-</html>
+<!-- Agrega esto al final, antes de </body> -->
+<script src="../js/auth.js"></script>
+<script>
+  // Manejar el formulario de login
+  document.getElementById('formLogin').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btnLogin = document.getElementById('btnLogin');
+    
+    // Validación básica
+    if (!email || !password) {
+      window.supabaseAuth.mostrarNotificacion('Por favor completa todos los campos', 'error');
+      return;
+    }
+    
+    // Cambiar estado del botón
+    const originalHTML = btnLogin.innerHTML;
+    btnLogin.innerHTML = '<i class="fas fa-spinner auth-loading"></i> Iniciando sesión...';
+    btnLogin.disabled = true;
+    
+    try {
+      // Usar Supabase Auth
+      const resultado = await window.supabaseAuth.iniciarSesion(email, password);
+      
+      if (resultado.success) {
+        window.supabaseAuth.mostrarNotificacion(
+          `¡Bienvenido ${resultado.user.email}!`, 
+          'success'
+        );
+        
+        // Redirigir según tipo de usuario
+        setTimeout(() => {
+          const usuario = window.supabaseAuth.obtenerUsuarioActual();
+          const tipo = usuario?.tipo || 'ciudadano';
+          
+          if (tipo === 'administrador') {
+            window.location.href = 'admin/dashboard.html';
+          } else if (tipo === 'policia') {
+            window.location.href = 'policia/dashboard.html';
+          } else {
+            window.location.href = 'ciudadano/dashboard.html';
+          }
+        }, 1500);
+        
+      } else {
+        throw new Error(resultado.error);
+      }
+      
+    } catch (error) {
+      window.supabaseAuth.mostrarNotificacion(
+        `Error: ${error.message}`, 
+        'error'
+      );
+      
+    } finally {
+      // Restaurar botón
+      btnLogin.innerHTML = originalHTML;
+      btnLogin.disabled = false;
+    }
+  });
+</script>
