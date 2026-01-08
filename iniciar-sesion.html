@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Iniciar Sesión - Cusco Reporta</title>
 
+  <!-- ESTILOS -->
   <link rel="stylesheet" href="../css/styles.css" />
+  <!-- FontAwesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Fuente Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -126,6 +130,9 @@
       color:#8b0000;
       text-decoration:none;
       font-weight:700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .footer-msg{
@@ -136,6 +143,64 @@
       letter-spacing: .5px;
     }
 
+    /* CREDENCIALES DE PRUEBA */
+    .credenciales-prueba {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      border-left: 4px solid #8b0000;
+    }
+    .credenciales-prueba h4 {
+      margin-top: 0;
+      color: #8b0000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .credenciales-prueba p {
+      margin: 8px 0;
+      font-size: 0.9rem;
+    }
+
+    /* NOTIFICACIONES */
+    .auth-notificacion {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      z-index: 10000;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: slideInAuth 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 400px;
+    }
+    @keyframes slideInAuth {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutAuth {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    .auth-notificacion.success { background: #28a745; }
+    .auth-notificacion.error { background: #dc3545; }
+    .auth-notificacion.info { background: #17a2b8; }
+
+    .auth-loading {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     @media (max-width: 600px){
       .auth-card{ padding: 20px 16px 18px; }
     }
@@ -143,7 +208,7 @@
 </head>
 
 <body>
-  <!-- NAVBAR (usa tu estilo existente si ya lo tienes en styles.css) -->
+  <!-- NAVBAR -->
   <header class="navbar">
     <div class="navbar__left" style="display:flex; align-items:center; gap:10px;">
       <img src="../assents/images/CuscoReporta.png" alt="Logo Cusco Reporta" class="navbar__logo">
@@ -162,123 +227,324 @@
     <section class="auth-card">
       <div class="auth-header">
         <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta">
-        <h1>INICIO DE SESIÓN</h1>
-        <p>Ingresa con tu usuario o correo para acceder al panel.</p>
+        <h1>INICIO DE SESIÓN</husuario@cuscoreporta.com1>
+        <p>Usa las credenciales de prueba o tu cuenta registrada</p>
+        
+        <!-- CREDENCIALES DE PRUEBA -->
+        <div class="credenciales-prueba">
+          <h4><i class="fas fa-key"></i> Credenciales de Prueba</h4>
+          <p><strong>Email:</strong> test@cuscoreporta.com</p>
+          <p><strong>Contraseña:</strong> Test123456</p>
+          <p style="font-size: 0.8rem; color: #666;">
+            <i class="fas fa-info-circle"></i> Si no funciona, crea tu propia cuenta
+          </p>
+        </div>
       </div>
 
       <div class="toggle-row">
         <div class="toggle">
-          <a href="Registro_Usuario.html">🏬 Registrarse</a>
+          <a href="iniciar-sesion.html" class="active">
+            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+          </a>
+          <a href="Registro_Usuario.html">
+            <i class="fas fa-user-plus"></i> Registrarse
+          </a>
         </div>
       </div>
 
-<!-- En tu iniciar-sesion.html, actualiza el formulario -->
-<form id="formLogin" class="form">
-  <div class="form-group">
-    <label for="email" class="form-label">
-      <i class="fas fa-envelope"></i> Correo Electrónico
-    </label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      class="form-input"
-      placeholder="tu@email.com"
-      required
-    />
-  </div>
+      <form id="formLogin" class="form">
+        <div class="form-group">
+          <label for="email" class="form-label">
+            <i class="fas fa-envelope"></i> Correo Electrónico
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-input"
+            placeholder="tu@email.com"
+            required
+            value="test@cuscoreporta.com"
+          />
+        </div>
 
-  <div class="form-group">
-    <label for="password" class="form-label">
-      <i class="fas fa-lock"></i> Contraseña
-    </label>
-    <input
-      type="password"
-      id="password"
-      name="password"
-      class="form-input"
-      placeholder="••••••••"
-      required
-    />
-  </div>
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <i class="fas fa-lock"></i> Contraseña
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-input"
+            placeholder="••••••••"
+            required
+            value="Test123456"
+          />
+        </div>
 
-  <button type="submit" class="submit-btn" id="btnLogin">
-    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-  </button>
+        <button type="submit" class="submit-btn" id="btnLogin">
+          <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+        </button>
 
-  <div class="links">
-    <a href="recuperar_contrasena.html">
-      <i class="fas fa-key"></i> ¿Olvidaste tu contraseña?
-    </a>
-    <a href="Registro_Usuario.html">
-      <i class="fas fa-user-plus"></i> Crear cuenta nueva
-    </a>
-    <a href="index.html">
-      <i class="fas fa-home"></i> ← Volver al inicio
-    </a>
-  </div>
-</form>
+        <div class="links">
+          <a href="recuperar_contrasena.html">
+            <i class="fas fa-key"></i> ¿Olvidaste tu contraseña?
+          </a>
+          <a href="Registro_Usuario.html">
+            <i class="fas fa-user-plus"></i> Crear cuenta nueva
+          </a>
+          <a href="index.html">
+            <i class="fas fa-home"></i> ← Volver al inicio
+          </a>
+        </div>
+      </form>
 
-<!-- Agrega esto al final, antes de </body> -->
-<script src="../js/auth.js"></script>
-<script>
-  // Manejar el formulario de login
-  document.getElementById('formLogin').addEventListener('submit', async function(e) {
-    e.preventDefault();
+      <!-- BOTÓN PARA CREAR USUARIOS DE PRUEBA (SOLO DESARROLLO) -->
+      <div style="text-align: center; margin-top: 20px;">
+        <button id="btnCrearUsuarios" 
+                style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">
+          <i class="fas fa-magic"></i> Crear Usuarios de Prueba
+        </button>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+          (Solo para desarrollo - crea 3 usuarios automáticamente)
+        </p>
+      </div>
+
+      <div class="footer-msg">¡CONFÍA EN NOSOTROS!</div>
+    </section>
+  </main>
+
+  <!-- SCRIPTS EN ORDEN CORRECTO -->
+  <!-- 1. Supabase SDK -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  
+  <!-- 2. Auth.js SIMPLIFICADO (lo creamos inline primero) -->
+  <script>
+    // ==================== AUTH.JS SIMPLIFICADO ====================
     
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const btnLogin = document.getElementById('btnLogin');
+    // CONFIGURACIÓN (¡REEMPLAZA CON TUS CREDENCIALES!)
+    const SUPABASE_URL = 'https://grchvnewfkakaqfkgbzy.supabase.co';
+    // ⚠️ REEMPLAZA ESTO con tu ANON KEY de Supabase
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...TU_CLAVE_AQUI';
     
-    // Validación básica
-    if (!email || !password) {
-      window.supabaseAuth.mostrarNotificacion('Por favor completa todos los campos', 'error');
-      return;
-    }
+    // Crear cliente
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    // Cambiar estado del botón
-    const originalHTML = btnLogin.innerHTML;
-    btnLogin.innerHTML = '<i class="fas fa-spinner auth-loading"></i> Iniciando sesión...';
-    btnLogin.disabled = true;
-    
-    try {
-      // Usar Supabase Auth
-      const resultado = await window.supabaseAuth.iniciarSesion(email, password);
-      
-      if (resultado.success) {
-        window.supabaseAuth.mostrarNotificacion(
-          `¡Bienvenido ${resultado.user.email}!`, 
-          'success'
-        );
-        
-        // Redirigir según tipo de usuario
-        setTimeout(() => {
-          const usuario = window.supabaseAuth.obtenerUsuarioActual();
-          const tipo = usuario?.tipo || 'ciudadano';
+    // FUNCIONES DE AUTH
+    window.supabaseAuth = {
+      // 1. INICIAR SESIÓN
+      async iniciarSesion(email, password) {
+        try {
+          console.log('🔐 Intentando login:', email);
           
-          if (tipo === 'administrador') {
-            window.location.href = 'admin/dashboard.html';
-          } else if (tipo === 'policia') {
-            window.location.href = 'policia/dashboard.html';
-          } else {
-            window.location.href = 'ciudadano/dashboard.html';
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+          
+          if (error) {
+            console.error('❌ Error login:', error);
+            throw error;
           }
-        }, 1500);
+          
+          console.log('✅ Login exitoso:', data.user.email);
+          
+          // Guardar en sessionStorage
+          sessionStorage.setItem('auth_user', JSON.stringify(data.user));
+          sessionStorage.setItem('auth_token', data.session.access_token);
+          
+          return {
+            success: true,
+            user: data.user,
+            session: data.session
+          };
+          
+        } catch (error) {
+          return {
+            success: false,
+            error: error.message
+          };
+        }
+      },
+      
+      // 2. MOSTRAR NOTIFICACIÓN
+      mostrarNotificacion(mensaje, tipo = 'info') {
+        // Eliminar notificación anterior si existe
+        const notifAnterior = document.querySelector('.auth-notificacion');
+        if (notifAnterior) {
+          notifAnterior.style.animation = 'slideOutAuth 0.3s ease-out forwards';
+          setTimeout(() => notifAnterior.remove(), 300);
+        }
         
-      } else {
-        throw new Error(resultado.error);
+        // Crear nueva notificación
+        const notificacion = document.createElement('div');
+        notificacion.className = `auth-notificacion ${tipo}`;
+        
+        const iconos = {
+          success: 'fa-check-circle',
+          error: 'fa-exclamation-circle',
+          info: 'fa-info-circle'
+        };
+        
+        notificacion.innerHTML = `
+          <i class="fas ${iconos[tipo] || 'fa-info-circle'}"></i>
+          <span>${mensaje}</span>
+        `;
+        
+        document.body.appendChild(notificacion);
+        
+        // Auto-eliminar después de 4 segundos
+        setTimeout(() => {
+          notificacion.style.animation = 'slideOutAuth 0.3s ease-out forwards';
+          setTimeout(() => notificacion.remove(), 300);
+        }, 4000);
+      },
+      
+      // 3. OBTENER USUARIO ACTUAL
+      obtenerUsuarioActual() {
+        try {
+          const userStr = sessionStorage.getItem('auth_user');
+          return userStr ? JSON.parse(userStr) : null;
+        } catch {
+          return null;
+        }
+      },
+      
+      // 4. CREAR USUARIOS DE PRUEBA
+      async crearUsuariosPrueba() {
+        const usuarios = [
+          { email: 'test@cuscoreporta.com', password: 'Test123456', nombre: 'Usuario Test' },
+          { email: 'policia@cuscoreporta.com', password: 'Policia123', nombre: 'Oficial de Tránsito' },
+          { email: 'admin@cuscoreporta.com', password: 'Admin123456', nombre: 'Administrador' }
+        ];
+        
+        let resultados = 'Resultados:\n\n';
+        
+        for (const usuario of usuarios) {
+          try {
+            const { error } = await supabase.auth.signUp({
+              email: usuario.email,
+              password: usuario.password,
+              options: {
+                data: {
+                  nombre_completo: usuario.nombre,
+                  tipo_usuario: usuario.email.includes('admin') ? 'administrador' : 
+                               usuario.email.includes('policia') ? 'policia' : 'ciudadano'
+                }
+              }
+            });
+            
+            if (error) {
+              if (error.message.includes('already registered')) {
+                resultados += `✅ ${usuario.email}: Ya existe (puedes usarlo)\n`;
+              } else {
+                resultados += `❌ ${usuario.email}: ${error.message}\n`;
+              }
+            } else {
+              resultados += `✅ ${usuario.email}: Creado exitosamente\n`;
+            }
+            
+          } catch (err) {
+            resultados += `❌ ${usuario.email}: ${err.message}\n`;
+          }
+        }
+        
+        alert(resultados + '\n\nCredenciales:\n' +
+              '1. test@cuscoreporta.com / Test123456\n' +
+              '2. policia@cuscoreporta.com / Policia123\n' +
+              '3. admin@cuscoreporta.com / Admin123456');
+      }
+    };
+    
+    console.log('✅ Supabase Auth configurado');
+  </script>
+  
+  <!-- 3. Manejo del formulario -->
+  <script>
+    // Manejar el formulario de login
+    document.getElementById('formLogin').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btnLogin = document.getElementById('btnLogin');
+      
+      // Validación básica
+      if (!email || !password) {
+        window.supabaseAuth.mostrarNotificacion('Por favor completa todos los campos', 'error');
+        return;
       }
       
-    } catch (error) {
-      window.supabaseAuth.mostrarNotificacion(
-        `Error: ${error.message}`, 
-        'error'
-      );
+      // Cambiar estado del botón
+      const originalHTML = btnLogin.innerHTML;
+      btnLogin.innerHTML = '<i class="fas fa-spinner auth-loading"></i> Iniciando sesión...';
+      btnLogin.disabled = true;
       
-    } finally {
-      // Restaurar botón
-      btnLogin.innerHTML = originalHTML;
-      btnLogin.disabled = false;
-    }
-  });
-</script>
+      try {
+        // Usar Supabase Auth
+        const resultado = await window.supabaseAuth.iniciarSesion(email, password);
+        
+        if (resultado.success) {
+          window.supabaseAuth.mostrarNotificacion(
+            `¡Bienvenido ${resultado.user.email}!`, 
+            'success'
+          );
+          
+          // Redirigir después de 1.5 segundos
+          setTimeout(() => {
+            // Por ahora redirigir a dashboard general
+            window.location.href = 'dashboard.html';
+          }, 1500);
+          
+        } else {
+          // Manejar errores específicos
+          let mensajeError = resultado.error;
+          
+          if (resultado.error.includes('Invalid login credentials')) {
+            mensajeError = 'Email o contraseña incorrectos';
+          } else if (resultado.error.includes('Email not confirmed')) {
+            mensajeError = 'Por favor verifica tu email antes de iniciar sesión';
+          }
+          
+          throw new Error(mensajeError);
+        }
+        
+      } catch (error) {
+        window.supabaseAuth.mostrarNotificacion(
+          `Error: ${error.message}`, 
+          'error'
+        );
+        
+      } finally {
+        // Restaurar botón
+        btnLogin.innerHTML = originalHTML;
+        btnLogin.disabled = false;
+      }
+    });
+    
+    // Botón para crear usuarios de prueba
+    document.getElementById('btnCrearUsuarios').addEventListener('click', function() {
+      if (confirm('¿Crear 3 usuarios de prueba?\n\nEsto registrará:\n1. test@cuscoreporta.com\n2. policia@cuscoreporta.com\n3. admin@cuscoreporta.com')) {
+        window.supabaseAuth.crearUsuariosPrueba();
+      }
+    });
+    
+    // Rellenar automáticamente si hay parámetros en la URL
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const emailParam = urlParams.get('email');
+      
+      if (emailParam) {
+        document.getElementById('email').value = emailParam;
+      }
+      
+      // Verificar si ya está logueado
+      const usuario = window.supabaseAuth.obtenerUsuarioActual();
+      if (usuario) {
+        window.location.href = 'dashboard.html';
+      }
+    });
+  </script>
+</body>
+</html>
