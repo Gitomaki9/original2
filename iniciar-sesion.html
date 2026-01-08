@@ -492,10 +492,19 @@
           );
           
           // Redirigir después de 1.5 segundos
-          setTimeout(() => {
-            // Por ahora redirigir a dashboard general
-            window.location.href = 'dashboard.html';
-          }, 1500);
+        setTimeout(() => {
+          // Obtener tipo de usuario de los metadata
+          const user = window.supabaseAuth.obtenerUsuarioActual();
+          const tipo = user?.user_metadata?.tipo_usuario || 'ciudadano';
+          
+          if (tipo === 'administrador') {
+            window.location.href = 'perfil_admin.html';
+          } else if (tipo === 'policia') {
+            window.location.href = 'policia/dashboard.html';
+          } else {
+            window.location.href = 'perfil_usuario.html'; // ← CAMBIA AQUÍ
+          }
+        }, 1500);
           
         } else {
           // Manejar errores específicos
@@ -548,3 +557,4 @@
   </script>
 </body>
 </html>
+
