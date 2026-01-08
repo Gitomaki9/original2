@@ -6,7 +6,6 @@
   <title>Estado de Reportes - Cusco Reporta</title>
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- Incluir Supabase JS -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   
   <style>
@@ -32,18 +31,21 @@
       font-size: 1.5rem;
     }
     
+    /* CONTENEDOR PRINCIPAL DE FILTROS - CORREGIDO */
     .date-filters {
       display: flex;
-      gap: 20px;
+      gap: 15px;
       margin-bottom: 15px;
       flex-wrap: wrap;
-      align-items: flex-end;
+      align-items: flex-end; /* Esto alinea todo al fondo */
     }
     
+    /* GRUPO DE FILTROS ALINEADOS */
     .filter-group {
       display: flex;
       flex-direction: column;
-      min-width: 160px;
+      min-width: 180px;
+      flex: 1;
     }
     
     .filter-group label {
@@ -51,6 +53,9 @@
       margin-bottom: 5px;
       color: #555;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
     
     .filter-group input,
@@ -60,13 +65,39 @@
       border-radius: 6px;
       font-size: .9rem;
       background: white;
+      width: 100%;
+      box-sizing: border-box;
     }
     
+    /* GRUPO ESPECIAL PARA BÚSQUEDA */
+    .search-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 250px;
+      flex: 2;
+    }
+    
+    .search-input-container {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+    }
+    
+    .search-input-container input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: .9rem;
+    }
+    
+    /* BOTONES ALINEADOS */
     .toolbar {
       display: flex;
       gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
+      align-items: flex-end; /* Alinea botones al fondo */
+      height: 100%;
+      padding-bottom: 5px; /* Ajuste fino para alineación */
     }
     
     .btn {
@@ -79,6 +110,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      height: fit-content;
+      white-space: nowrap;
     }
     
     .btn-primary {
@@ -100,6 +133,15 @@
     .btn-outline:hover {
       background: #f8f9fa;
       border-color: #999;
+    }
+    
+    /* Botón pequeño para búsqueda */
+    .btn-search {
+      padding: 10px 12px;
+      height: 39px; /* Misma altura que inputs */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     .reports-table h3 {
@@ -130,16 +172,6 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-    }
-    
-    .meta-pill.ok {
-      background: #d4edda;
-      color: #155724;
-    }
-    
-    .meta-pill.error {
-      background: #f8d7da;
-      color: #721c24;
     }
     
     table {
@@ -214,11 +246,7 @@
       transform: translateY(-1px);
     }
     
-    .muted {
-      color: #777;
-    }
-    
-    /* Modal mejorado */
+    /* Modal */
     #modalDetalle {
       display: none;
       position: fixed;
@@ -227,7 +255,6 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      backdrop-filter: blur(2px);
     }
     
     #modalCard {
@@ -238,18 +265,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.2);
       max-height: 85vh;
       overflow-y: auto;
-      animation: modalFadeIn 0.3s ease;
-    }
-    
-    @keyframes modalFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
     
     #modalHeader {
@@ -257,20 +272,17 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
     }
     
     #modalTitle {
       margin: 0;
       color: #8b0000;
-      font-size: 1.2rem;
     }
     
     #modalBody {
       color: #333;
       line-height: 1.45;
+      margin-top: 10px;
     }
     
     #modalClose {
@@ -280,37 +292,6 @@
       border-radius: 10px;
       cursor: pointer;
       font-weight: 800;
-      transition: background 0.2s ease;
-    }
-    
-    #modalClose:hover {
-      background: #ddd;
-    }
-    
-    /* Scroll personalizado para tabla */
-    .table-container {
-      overflow-x: auto;
-      margin: 0 25px;
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
-    }
-    
-    .table-container::-webkit-scrollbar {
-      height: 8px;
-    }
-    
-    .table-container::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 4px;
-    }
-    
-    .table-container::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 4px;
-    }
-    
-    .table-container::-webkit-scrollbar-thumb:hover {
-      background: #aaa;
     }
     
     /* Responsive */
@@ -321,83 +302,32 @@
         gap: 15px;
       }
       
-      .filter-group {
+      .filter-group, .search-group {
         min-width: 100%;
       }
       
       .toolbar {
         width: 100%;
         justify-content: flex-start;
-      }
-      
-      th, td {
-        padding: 10px 12px;
-      }
-      
-      .reports-header {
-        padding: 20px;
+        margin-top: 10px;
       }
     }
     
     @media (max-width: 768px) {
-      table {
-        font-size: .85rem;
-      }
-      
-      th, td {
-        padding: 8px 10px;
+      .date-filters {
+        gap: 10px;
       }
       
       .btn {
         padding: 8px 12px;
         font-size: 0.9rem;
       }
-      
-      .reports-header h2 {
-        font-size: 1.3rem;
-      }
-      
-      .meta-pill {
-        font-size: 0.8rem;
-        padding: 4px 8px;
-      }
-    }
-    
-    /* Estado vacío */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-    }
-    
-    .empty-state i {
-      font-size: 48px;
-      margin-bottom: 15px;
-      color: #ccc;
-    }
-    
-    /* Carga */
-    .loading {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-    }
-    
-    .loading i {
-      font-size: 24px;
-      margin-right: 10px;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 
 <body>
-  <!-- NAVBAR SUPERIOR - Igual que perfil_usuario.html -->
+  <!-- NAVBAR SUPERIOR -->
   <header class="topbar">
     <div class="topbar__logo">
       <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
@@ -409,9 +339,9 @@
     </nav>
   </header>
 
-  <!-- CONTENEDOR PRINCIPAL - Estructura idéntica a perfil_usuario.html -->
+  <!-- CONTENEDOR PRINCIPAL -->
   <div class="container">
-    <!-- SIDEBAR IZQUIERDO - EXACTAMENTE como perfil_usuario.html -->
+    <!-- SIDEBAR IZQUIERDO -->
     <aside class="sidebar" style="display: flex; flex-direction: column; justify-content: flex-start;">
       <div class="sidebar__user" style="margin-bottom: 10px;">
         <div class="sidebar__avatar">
@@ -423,7 +353,7 @@
         </div>
       </div>
 
-      <!-- Menú del usuario - Mismo formato que perfil_usuario.html -->
+      <!-- Menú del usuario -->
       <ul class="sidebar__menu" style="margin-top: 0; padding-top: 0; list-style: none;">
         <li style="display: flex; align-items: flex-start;">
           <a href="perfil_usuario.html">
@@ -470,7 +400,6 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
-      <!-- Encabezado de la página -->
       <section class="perfil-container">
         <h1>Estado de Reportes</h1>
         <p style="color: #666; margin-top: 5px;">
@@ -480,40 +409,50 @@
 
       <!-- Contenedor principal de reportes -->
       <div class="reports-container">
-        <!-- Cabecera con filtros -->
+        <!-- Cabecera con filtros - REESTRUCTURADO -->
         <div class="reports-header">
           <h2>FILTRAR INCIDENCIAS</h2>
           
+          <!-- FILTROS ALINEADOS -->
           <div class="date-filters">
-            <!-- Filtros de fecha -->
+            <!-- Filtro Desde -->
             <div class="filter-group">
-              <label for="fecha-inicio">Desde</label>
+              <label for="fecha-inicio">
+                <i class="fa-solid fa-calendar-day"></i> Desde
+              </label>
               <input type="date" id="fecha-inicio">
             </div>
 
+            <!-- Filtro Hasta -->
             <div class="filter-group">
-              <label for="fecha-fin">Hasta</label>
+              <label for="fecha-fin">
+                <i class="fa-solid fa-calendar-day"></i> Hasta
+              </label>
               <input type="date" id="fecha-fin">
             </div>
 
-            <!-- Filtro de estado -->
+            <!-- Filtro Estado -->
             <div class="filter-group">
-              <label for="estado">Estado</label>
+              <label for="estado">
+                <i class="fa-solid fa-filter"></i> Estado
+              </label>
               <select id="estado">
                 <option value="todos">Todos los estados</option>
-                <option value="reporte">Reportado (Recibido)</option>
+                <option value="reporte">Reportado</option>
                 <option value="proceso">En Proceso</option>
                 <option value="solucionado">Solucionado</option>
                 <option value="cancelado">Cancelado</option>
               </select>
             </div>
 
-            <!-- Filtro de búsqueda por texto -->
-            <div class="filter-group">
-              <label for="busqueda">Buscar</label>
-              <div style="display: flex; gap: 5px;">
+            <!-- Búsqueda por texto -->
+            <div class="search-group">
+              <label for="busqueda">
+                <i class="fa-solid fa-search"></i> Buscar
+              </label>
+              <div class="search-input-container">
                 <input type="text" id="busqueda" placeholder="Placa, nombre, ID...">
-                <button id="btnBuscarTermino" class="btn btn-outline" type="button" title="Buscar">
+                <button id="btnBuscarTermino" class="btn btn-outline btn-search" type="button" title="Buscar">
                   <i class="fa-solid fa-search"></i>
                 </button>
               </div>
@@ -546,8 +485,8 @@
             </span>
           </div>
 
-          <!-- Contenedor de tabla con scroll -->
-          <div class="table-container">
+          <!-- Tabla -->
+          <div style="padding: 0 25px; overflow-x: auto;">
             <table>
               <thead>
                 <tr>
@@ -562,37 +501,17 @@
                 </tr>
               </thead>
               <tbody id="tbodyInc">
-                <!-- Estado inicial -->
                 <tr>
-                  <td colspan="8" class="empty-state">
-                    <i class="fa-solid fa-inbox"></i>
-                    <p>Usa los filtros y haz clic en "Buscar" para cargar incidencias.</p>
+                  <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
+                    Usa "Buscar" para cargar incidencias
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Mensaje informativo -->
-          <p id="msgLista" class="muted" style="padding: 15px 25px; text-align: center; border-top: 1px solid #eee;">
-            <i class="fa-solid fa-circle-info"></i> 
-            Mostrando <span id="mostrando">0</span> de <span id="totalRegistros">0</span> registros
-          </p>
+          <p id="msgLista" class="muted" style="padding: 10px 25px;"></p>
         </div>
-      </div>
-      
-      <!-- Información adicional para usuarios -->
-      <div class="info-box" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #b22222;">
-        <h4 style="margin-top: 0; color: #8b0000;">
-          <i class="fa-solid fa-lightbulb"></i> Información importante
-        </h4>
-        <ul style="margin-bottom: 0; padding-left: 20px; color: #555;">
-          <li>Los reportes se actualizan en tiempo real desde la base de datos</li>
-          <li>Puedes hacer clic en "Ver" para ver detalles completos de cada incidencia</li>
-          <li>Usa los filtros para encontrar reportes específicos</li>
-          <li>Los usuarios anónimos solo ven sus propios reportes anónimos</li>
-          <li>Los administradores pueden ver todos los reportes</li>
-        </ul>
       </div>
     </main>
   </div>
@@ -601,57 +520,16 @@
   <div id="modalDetalle">
     <div id="modalCard">
       <div id="modalHeader">
-        <h3 id="modalTitle"><i class="fa-solid fa-file-circle-question"></i> Detalle de incidencia</h3>
-        <button id="modalClose" title="Cerrar">
-          <i class="fa-solid fa-xmark"></i> Cerrar
-        </button>
+        <h3 id="modalTitle">Detalle de incidencia</h3>
+        <button id="modalClose">Cerrar</button>
       </div>
-      <hr style="margin: 12px 0; border: none; border-top: 1px solid #eee;">
-      <div id="modalBody">
-        <!-- Contenido dinámico se insertará aquí -->
-      </div>
+      <hr style="margin:12px 0;">
+      <div id="modalBody"></div>
     </div>
   </div>
 
   <!-- Scripts -->
-  <!-- Primero supabase.js, luego lista_incidencias.js -->
   <script src="../js/supabase.js"></script>
   <script src="../js/lista_incidencias.js"></script>
-  
-  <script>
-    // Script adicional para manejar la barra lateral
-    document.addEventListener('DOMContentLoaded', function() {
-      // Asegurar que la clase active se aplique correctamente
-      const currentPage = window.location.pathname.split('/').pop();
-      const menuLinks = document.querySelectorAll('.sidebar__menu a');
-      
-      menuLinks.forEach(link => {
-        const linkPage = link.getAttribute('href');
-        if (linkPage === currentPage || (currentPage === '' && linkPage === 'index.html')) {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
-        }
-      });
-      
-      // Manejar logout
-      const logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', async function() {
-          if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-            try {
-              if (window.supabaseClient) {
-                await window.supabaseClient.auth.signOut();
-              }
-              window.location.href = 'index.html';
-            } catch (error) {
-              console.error('Error al cerrar sesión:', error);
-              window.location.href = 'index.html';
-            }
-          }
-        });
-      }
-    });
-  </script>
 </body>
 </html>
