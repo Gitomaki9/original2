@@ -533,28 +533,77 @@
     });
     
     // Botón para crear usuarios de prueba
-    document.getElementById('btnCrearUsuarios').addEventListener('click', function() {
-      if (confirm('¿Crear 3 usuarios de prueba?\n\nEsto registrará:\n1. test@cuscoreporta.com\n2. policia@cuscoreporta.com\n3. admin@cuscoreporta.com')) {
-        window.supabaseAuth.crearUsuariosPrueba();
-      }
-    });
+    <!-- En tu iniciar-sesion.html, MODIFICA el script del final -->
+
+<script>
+  // Manejar el formulario de login
+  document.getElementById('formLogin').addEventListener('submit', async function(e) {
+    e.preventDefault();
     
-    // Rellenar automáticamente si hay parámetros en la URL
-    document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const emailParam = urlParams.get('email');
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btnLogin = document.getElementById('btnLogin');
+    
+    // Validación básica
+    if (!email || !password) {
+      mostrarAlertaSimple('Por favor completa todos los campos', 'error');
+      return;
+    }
+    
+    // Cambiar estado del botón
+    const originalHTML = btnLogin.innerHTML;
+    btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
+    btnLogin.disabled = true;
+    
+    try {
+      // Usar Supabase Auth
+      const resultado = await window.supabaseAuth.iniciarSesion(email, password);
       
-      if (emailParam) {
-        document.getElementById('email').value = emailParam;
+      if (resultado.success) {
+        mostrarAlertaSimple(`¡Bienvenido ${resultado.user.email}!`, 'success');
+        
+        // Redirigir según tipo de usuario
+        setTimeout(() => {
+          const tipo = resultado.user.tipo_usuario || 'ciudadano';
+          
+          if (tipo === 'administrador') {
+            window.location.href = 'admin/dashboard.html';
+          } else if (tipo === 'policia') {
+            window.location.href = 'policia/dashboard.html';
+          } else {
+            window.location.href = 'perfil_usuario.html'; // ← AQUÍ REDIRIGE
+          }
+        }, 1500);
+        
+      } else {
+        throw new Error(resultado.error);
       }
       
-      // Verificar si ya está logueado
-      const usuario = window.supabaseAuth.obtenerUsuarioActual();
-      if (usuario) {
-        window.location.href = 'dashboard.html';
+    } catch (error) {
+      // Manejar errores específicos
+      let mensaje = error.message;
+      
+      if (error.message.includes('Invalid login credentials')) {
+        mensaje = 'Email o contraseña incorrectos';
+      } else if (error.message.includes('Email not confirmed')) {
+        mensaje = 'Por favor verifica tu email antes de iniciar sesión';
       }
-    });
-  </script>
+      
+      mostrarAlertaSimple(`Error: ${mensaje}`, 'error');
+      
+    } finally {
+      // Restaurar botón
+      btnLogin.innerHTML = originalHTML;
+      btnLogin.disabled = false;
+    }
+  });
+  
+  // Función simple para alertas (temporal)
+  function mostrarAlertaSimple(mensaje, tipo = 'info') {
+    alert(tipo === 'error' ? '❌ ' + mensaje : '✅ ' + mensaje);
+  }
+</script>
 </body>
 </html>
+
 
