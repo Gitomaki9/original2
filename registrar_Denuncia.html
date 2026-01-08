@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registrar Denuncia - Cusco Reporta</title>
   
-  <!-- RUTAS CORREGIDAS para Netlify (sin ../) -->
+  <!-- Fuentes y estilos -->
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
@@ -18,38 +21,592 @@
   </script>
   
   <style>
-    #mapContainer { height: 300px; width: 100%; border-radius: 8px; }
-    .fila { display: flex; flex-wrap: wrap; gap: 30px; }
-    .columna { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
-    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000; }
-    .modal-content { background:#fff; padding:20px; border-radius:8px; width:90%; max-width:400px; }
-    .modal-content h3 { margin-top:0; }
-    .close-modal { float:right; cursor:pointer; font-size:18px; font-weight:bold; }
-    textarea { width:100%; min-height:100px; padding:8px; border-radius:5px; border:1px solid #ccc; resize:none; }
+    /* ESTILOS GENERALES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
-    /* Estilos para mensajes */
-    .mensaje-flotante {
+    body {
+      font-family: "Poppins", sans-serif;
+      background: radial-gradient(circle at top, #7b0000 0%, #3b0000 60%, #1c0000 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* TOPBAR MEJORADA */
+    .topbar {
+      background: white;
+      padding: 0 30px;
+      height: 70px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .topbar__logo img {
+      height: 45px;
+      width: auto;
+      object-fit: contain;
+    }
+    
+    .topbar__menu {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+    
+    .topbar__menu a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .topbar__menu a:hover {
+      background: #f8f9fa;
+      color: #8b0000;
+      transform: translateY(-2px);
+    }
+    
+    .topbar__menu a:last-child {
+      background: linear-gradient(135deg, #8b0000, #b22222);
+      color: white;
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.25);
+    }
+    
+    .topbar__menu a:last-child:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(139, 0, 0, 0.35);
+    }
+    
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      display: flex;
+      gap: 30px;
+      padding: 30px;
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    /* SIDEBAR MEJORADA */
+    .sidebar {
+      width: 280px;
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+    
+    .sidebar__user {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .sidebar__avatar {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #8b0000, #b22222);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.3rem;
+    }
+    
+    .sidebar__info h3 {
+      margin: 0;
+      color: #333;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    .sidebar__info p {
+      margin: 0;
+      color: #666;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .sidebar__menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex: 1;
+    }
+    
+    .sidebar__menu li {
+      margin-bottom: 8px;
+    }
+    
+    .sidebar__menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 15px;
+      text-decoration: none;
+      color: #555;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    
+    .sidebar__menu a i {
+      width: 20px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    
+    .sidebar__menu a:hover {
+      background: #f8f9fa;
+      color: #8b0000;
+      transform: translateX(5px);
+    }
+    
+    .sidebar__menu a.active {
+      background: linear-gradient(135deg, #8b0000, #b22222);
+      color: white;
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.2);
+    }
+    
+    .logout-btn {
+      margin-top: auto;
+      padding: 14px;
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: "Poppins", sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+    }
+    
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(220, 53, 69, 0.35);
+    }
+    
+    /* CONTENIDO PRINCIPAL MEJORADO */
+    .main-content {
+      flex: 1;
+      background: white;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .main-content h1 {
+      color: #8b0000;
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .main-content h1 i {
+      font-size: 2rem;
+    }
+    
+    .main-content > p {
+      color: #666;
+      font-size: 1rem;
+      margin-bottom: 35px;
+      font-weight: 500;
+    }
+    
+    /* FORMULARIO MEJORADO */
+    .fila {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    
+    .columna {
+      flex: 1;
+      min-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    
+    .campo {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .campo label {
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .campo label i {
+      color: #8b0000;
+      font-size: 1.1rem;
+    }
+    
+    .campo input,
+    .campo select,
+    .campo textarea {
+      padding: 14px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-family: "Poppins", sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+    
+    .campo input:focus,
+    .campo select:focus,
+    .campo textarea:focus {
+      outline: none;
+      border-color: #8b0000;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+    }
+    
+    .campo textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    /* MAPA MEJORADO */
+    #mapContainer {
+      height: 320px;
+      width: 100%;
+      border-radius: 12px;
+      border: 2px solid #e9ecef;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* BOTONES MEJORADOS */
+    .btn-principal,
+    .btn-secundario {
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-family: "Poppins", sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-principal {
+      background: linear-gradient(135deg, #8b0000, #b22222);
+      color: white;
+      box-shadow: 0 6px 15px rgba(139, 0, 0, 0.25);
+    }
+    
+    .btn-principal:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(139, 0, 0, 0.3);
+    }
+    
+    .btn-principal:active {
+      transform: translateY(-1px);
+    }
+    
+    .btn-secundario {
+      background: #f8f9fa;
+      color: #333;
+      border: 2px solid #e9ecef;
+    }
+    
+    .btn-secundario:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+      border-color: #8b0000;
+      color: #8b0000;
+    }
+    
+    /* INFORMACIÓN ADICIONAL */
+    .info-adicional {
+      margin-top: 40px;
+      padding: 25px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      border-left: 5px solid #8b0000;
+    }
+    
+    .info-adicional h3 {
+      color: #8b0000;
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .info-adicional ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .info-adicional li {
+      color: #555;
+      margin-bottom: 10px;
+      padding-left: 25px;
+      position: relative;
+      font-weight: 500;
+    }
+    
+    .info-adicional li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    /* MODALES MEJORADOS */
+    .modal {
+      display: none;
       position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(3px);
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+    
+    .modal-content h3 {
+      color: #8b0000;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .close-modal {
+      position: absolute;
       top: 20px;
       right: 20px;
-      padding: 15px 25px;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      z-index: 9999;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: slideIn 0.3s ease-out;
+      font-size: 1.5rem;
+      color: #666;
+      cursor: pointer;
+      transition: color 0.3s ease;
     }
+    
+    .close-modal:hover {
+      color: #8b0000;
+    }
+    
+    .modal-content input {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-family: "Poppins", sans-serif;
+      font-size: 1rem;
+    }
+    
+    /* MENSAJES FLOTANTES */
+    .mensaje-flotante {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      padding: 18px 28px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 700;
+      z-index: 9999;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      animation: slideIn 0.4s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 400px;
+    }
+    
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
-    .exito { background-color: #28a745; }
-    .error { background-color: #dc3545; }
+    
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    .exito { 
+      background: linear-gradient(135deg, #28a745, #20c997);
+      border-left: 5px solid #1e7e34;
+    }
+    
+    .error { 
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      border-left: 5px solid #bd2130;
+    }
+    
+    .info { 
+      background: linear-gradient(135deg, #17a2b8, #138496);
+      border-left: 5px solid #117a8b;
+    }
+    
+    .warning { 
+      background: linear-gradient(135deg, #ffc107, #e0a800);
+      border-left: 5px solid #d39e00;
+      color: #333;
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      
+      .sidebar__user {
+        border-bottom: none;
+        margin-bottom: 0;
+        margin-right: 30px;
+      }
+      
+      .sidebar__menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      
+      .sidebar__menu li {
+        margin-bottom: 0;
+      }
+      
+      .logout-btn {
+        margin-top: 0;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .topbar {
+        padding: 0 20px;
+        height: 60px;
+      }
+      
+      .topbar__logo img {
+        height: 40px;
+      }
+      
+      .topbar__menu {
+        gap: 15px;
+      }
+      
+      .topbar__menu a {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+      
+      .container {
+        padding: 20px;
+      }
+      
+      .main-content {
+        padding: 25px;
+      }
+      
+      .main-content h1 {
+        font-size: 1.8rem;
+      }
+      
+      .columna {
+        min-width: 100%;
+      }
+      
+      .mensaje-flotante {
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        max-width: none;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .topbar__menu {
+        gap: 10px;
+      }
+      
+      .topbar__menu a {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+      }
+      
+      .main-content {
+        padding: 20px;
+      }
+      
+      .main-content h1 {
+        font-size: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- NAVBAR SUPERIOR -->
+  <!-- NAVBAR SUPERIOR MEJORADA -->
   <header class="topbar">
     <div class="topbar__logo">
       <img src="assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
@@ -63,62 +620,65 @@
   </header>
 
   <!-- CONTENEDOR PRINCIPAL -->
-  <div class="container" style="display:flex; gap:20px;">
-    <!-- SIDEBAR -->
-    <aside class="sidebar" style="display:flex; flex-direction:column; justify-content:flex-start;">
-      <div class="sidebar__user" style="margin-bottom:10px;">
+  <div class="container">
+    <!-- SIDEBAR MEJORADA -->
+    <aside class="sidebar">
+      <div class="sidebar__user">
         <div class="sidebar__avatar"><i class="fa-solid fa-user"></i></div>
-        <div class="sidebar__info"><h3>Jose Pérez</h3><p>Ciudadano</p></div>
+        <div class="sidebar__info">
+          <h3>Jose Pérez</h3>
+          <p>Ciudadano</p>
+        </div>
       </div>
 
-      <ul class="sidebar__menu" style="margin-top: 0; padding-top: 0; list-style: none;">
-        <li style="display: flex; align-items: flex-start;">
+      <ul class="sidebar__menu">
+        <li>
           <a href="perfil_usuario.html">
-            <i class="fa-solid fa-id-card" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Ver perfil</span>
+            <i class="fa-solid fa-id-card"></i>
+            <span>Ver perfil</span>
           </a>
         </li>
-        <li style="display: flex; align-items: flex-start;">
+        <li>
           <a href="ReportarIncidencia.html">
-            <i class="fa-solid fa-pen-to-square" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Reportar</span>
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Reportar</span>
           </a>
         </li>
-        <li style="display: flex; align-items: flex-start;">
+        <li>
           <a href="registrar_Denuncia.html" class="active">
-            <i class="fa-solid fa-triangle-exclamation" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Denunciar</span>
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Denunciar</span>
           </a>
         </li>
-        <li style="display: flex; align-items: flex-start;">
+        <li>
           <a href="lista_incidencias.html">
-            <i class="fa-solid fa-list-check" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Estado de reportes</span>
+            <i class="fa-solid fa-list-check"></i>
+            <span>Estado de reportes</span>
           </a>
         </li>
-        <li style="display: flex; align-items: flex-start;">
+        <li>
           <a href="MapaIncidiencias(Ciudadano).html">
-            <i class="fa-solid fa-map-location-dot" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Mapa de incidencias</span>
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>Mapa de incidencias</span>
           </a>
         </li>
-        <li style="display: flex; align-items: flex-start;">
+        <li>
           <a href="notificaciones.html">
-            <i class="fa-solid fa-bell" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Notificaciones</span>
+            <i class="fa-solid fa-bell"></i>
+            <span>Notificaciones</span>
           </a>
         </li>
       </ul>
 
-      <button class="logout-btn" id="logoutBtn" style="margin-top:auto;">
+      <button class="logout-btn" id="logoutBtn">
         <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
       </button>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="main-content denuncia-form" style="flex:1;">
+    <!-- CONTENIDO PRINCIPAL MEJORADO -->
+    <main class="main-content">
       <h1><i class="fa-solid fa-triangle-exclamation"></i> Registrar Denuncia</h1>
-      <p style="color: #666; margin-bottom: 25px;">Completa el formulario para reportar una incidencia de tránsito.</p>
+      <p>Completa el formulario para reportar una incidencia de tránsito.</p>
       
       <form id="formDenuncia" class="formulario">
         <div class="fila">
@@ -182,7 +742,7 @@
             <div class="campo">
               <label><i class="fa-solid fa-map"></i> Ubicar en el mapa (opcional)</label>
               <div id="mapContainer"></div>
-              <p style="font-size: 12px; color: #666; margin-top: 5px;">
+              <p style="font-size: 0.9rem; color: #666; margin-top: 8px;">
                 Haz clic en el mapa para seleccionar la ubicación exacta
               </p>
             </div>
@@ -202,20 +762,20 @@
               </select>
             </div>
             
-            <div class="campo" style="display:flex; gap:10px; margin-top: 10px;">
-              <button type="button" class="btn-secundario" id="btnVictima" style="flex:1;">
+            <div class="campo" style="display:flex; gap:15px; margin-top: 10px;">
+              <button type="button" class="btn-secundario" id="btnVictima">
                 <i class="fa-solid fa-user-injured"></i> Datos de la víctima
               </button>
-              <button type="button" class="btn-secundario" id="btnDenunciado" style="flex:1;">
+              <button type="button" class="btn-secundario" id="btnDenunciado">
                 <i class="fa-solid fa-user-police"></i> Datos del denunciado
               </button>
             </div>
             
-            <div class="campo" style="text-align:center; margin-top: 20px;">
-              <button type="submit" class="btn-principal" id="btnEnviar" style="padding: 12px 30px; font-size: 16px;">
+            <div class="campo" style="text-align:center; margin-top: 25px;">
+              <button type="submit" class="btn-principal" id="btnEnviar">
                 <i class="fa-solid fa-paper-plane"></i> Enviar Denuncia
               </button>
-              <p style="font-size: 12px; color: #666; margin-top: 10px;">
+              <p style="font-size: 0.85rem; color: #666; margin-top: 12px;">
                 * Campos obligatorios
               </p>
             </div>
@@ -224,9 +784,9 @@
       </form>
       
       <!-- Información adicional -->
-      <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+      <div class="info-adicional">
         <h3><i class="fa-solid fa-circle-info"></i> Información importante</h3>
-        <ul style="color: #555;">
+        <ul>
           <li>Tu denuncia será revisada por las autoridades correspondientes</li>
           <li>Recibirás un número de seguimiento para consultar el estado</li>
           <li>Puedes reportar de forma anónima si lo prefieres</li>
@@ -236,15 +796,17 @@
     </main>
   </div>
 
-  <!-- MODALES -->
+  <!-- MODALES MEJORADOS -->
   <div class="modal" id="modalVictima">
     <div class="modal-content">
       <span class="close-modal" id="closeVictima">&times;</span>
       <h3><i class="fa-solid fa-user-injured"></i> Datos de la víctima (opcional)</h3>
-      <input type="text" id="victima_nombre" placeholder="Nombre completo"><br><br>
-      <input type="text" id="victima_dni" placeholder="DNI"><br><br>
-      <input type="text" id="victima_telefono" placeholder="Teléfono"><br><br>
-      <button type="button" class="btn-secundario" onclick="document.getElementById('modalVictima').style.display='none'" style="width:100%;">Guardar y cerrar</button>
+      <input type="text" id="victima_nombre" placeholder="Nombre completo">
+      <input type="text" id="victima_dni" placeholder="DNI">
+      <input type="text" id="victima_telefono" placeholder="Teléfono">
+      <button type="button" class="btn-secundario" onclick="document.getElementById('modalVictima').style.display='none'" style="width:100%; margin-top: 10px;">
+        Guardar y cerrar
+      </button>
     </div>
   </div>
 
@@ -252,10 +814,12 @@
     <div class="modal-content">
       <span class="close-modal" id="closeDenunciado">&times;</span>
       <h3><i class="fa-solid fa-user-police"></i> Datos del denunciado (opcional)</h3>
-      <input type="text" id="denunciado_nombre" placeholder="Nombre completo"><br><br>
-      <input type="text" id="denunciado_dni" placeholder="DNI"><br><br>
-      <input type="text" id="denunciado_telefono" placeholder="Teléfono"><br><br>
-      <button type="button" class="btn-secundario" onclick="document.getElementById('modalDenunciado').style.display='none'" style="width:100%;">Guardar y cerrar</button>
+      <input type="text" id="denunciado_nombre" placeholder="Nombre completo">
+      <input type="text" id="denunciado_dni" placeholder="DNI">
+      <input type="text" id="denunciado_telefono" placeholder="Teléfono">
+      <button type="button" class="btn-secundario" onclick="document.getElementById('modalDenunciado').style.display='none'" style="width:100%; margin-top: 10px;">
+        Guardar y cerrar
+      </button>
     </div>
   </div>
 
@@ -266,14 +830,12 @@
     // ESPERAR A QUE TODO ESTÉ LISTO
     document.addEventListener('DOMContentLoaded', function() {
       // ==================== CONFIGURAR SUPABASE ====================
-      // ¡REEMPLAZA CON TUS CREDENCIALES EXACTAS!
       const SUPABASE_URL = 'https://grchvnewfkakaqfkgbzy.supabase.co';
       const SUPABASE_KEY = 'sb_publishable_bQZ1guTH9D2ByDwgMYGLfQ_g7bIsktc';
       
       // Verificar que la biblioteca se cargó
       if (!window.supabaseLib) {
-        console.error('❌ Error: Supabase no se cargó correctamente');
-        alert('Error: No se pudo conectar con la base de datos. Recarga la página.');
+        mostrarMensaje('Error: Supabase no se cargó correctamente', 'error');
         return;
       }
       
@@ -283,8 +845,8 @@
         supabase = window.supabaseLib.createClient(SUPABASE_URL, SUPABASE_KEY);
         console.log('✅ Supabase configurado correctamente');
       } catch (error) {
+        mostrarMensaje('Error en la configuración de la base de datos', 'error');
         console.error('❌ Error creando cliente Supabase:', error);
-        alert('Error en la configuración de la base de datos.');
         return;
       }
       
@@ -292,6 +854,41 @@
       let map = null;
       let marcador = null;
       let coordenadasSeleccionadas = null;
+      
+      // ==================== FUNCIÓN MOSTRAR MENSAJE ====================
+      function mostrarMensaje(mensaje, tipo = 'info') {
+        // Eliminar mensaje anterior si existe
+        const mensajeAnterior = document.querySelector('.mensaje-flotante');
+        if (mensajeAnterior) {
+          mensajeAnterior.style.animation = 'slideOut 0.3s ease-out forwards';
+          setTimeout(() => mensajeAnterior.remove(), 300);
+        }
+        
+        // Crear nuevo mensaje
+        const mensajeDiv = document.createElement('div');
+        mensajeDiv.className = `mensaje-flotante ${tipo}`;
+        
+        // Íconos según tipo
+        const iconos = {
+          success: 'fa-check-circle',
+          error: 'fa-exclamation-circle',
+          info: 'fa-info-circle',
+          warning: 'fa-exclamation-triangle'
+        };
+        
+        mensajeDiv.innerHTML = `
+          <i class="fas ${iconos[tipo] || iconos.info}"></i>
+          <span>${mensaje}</span>
+        `;
+        
+        document.body.appendChild(mensajeDiv);
+        
+        // Auto-eliminar después de 5 segundos
+        setTimeout(() => {
+          mensajeDiv.style.animation = 'slideOut 0.3s ease-out forwards';
+          setTimeout(() => mensajeDiv.remove(), 300);
+        }, 5000);
+      }
       
       // ==================== INICIALIZAR MAPA ====================
       function inicializarMapa() {
@@ -302,6 +899,14 @@
             attribution: '&copy; OpenStreetMap',
             maxZoom: 19
           }).addTo(map);
+          
+          // Icono personalizado para el marcador
+          const iconoPersonalizado = L.divIcon({
+            className: 'marcador-personalizado',
+            html: '<i class="fas fa-map-marker-alt" style="color: #8b0000; font-size: 32px;"></i>',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32]
+          });
           
           // Manejar clics en el mapa
           map.on('click', function(e) {
@@ -314,19 +919,27 @@
               lng: e.latlng.lng
             };
             
-            marcador = L.marker([coordenadasSeleccionadas.lat, coordenadasSeleccionadas.lng])
+            marcador = L.marker([coordenadasSeleccionadas.lat, coordenadasSeleccionadas.lng], {
+              icon: iconoPersonalizado
+            })
               .addTo(map)
-              .bindPopup(`Ubicación: ${coordenadasSeleccionadas.lat.toFixed(5)}, ${coordenadasSeleccionadas.lng.toFixed(5)}`)
+              .bindPopup(`
+                <div style="font-family: 'Poppins', sans-serif; padding: 5px;">
+                  <strong>📍 Ubicación seleccionada:</strong><br>
+                  ${coordenadasSeleccionadas.lat.toFixed(5)}, ${coordenadasSeleccionadas.lng.toFixed(5)}
+                </div>
+              `)
               .openPopup();
               
             console.log('📍 Coordenadas:', coordenadasSeleccionadas);
+            mostrarMensaje('Ubicación seleccionada en el mapa', 'info');
           });
           
           console.log('✅ Mapa inicializado');
         } catch (error) {
           console.error('❌ Error inicializando mapa:', error);
           document.getElementById('mapContainer').innerHTML = 
-            '<p style="color:red; padding:20px;">Error al cargar el mapa. Verifica tu conexión.</p>';
+            '<div style="height: 100%; display: flex; align-items: center; justify-content: center; color: #666; font-weight: 600;">Error al cargar el mapa. Verifica tu conexión.</div>';
         }
       }
       
@@ -335,8 +948,15 @@
         const modalVictima = document.getElementById("modalVictima");
         const modalDenunciado = document.getElementById("modalDenunciado");
         
-        document.getElementById("btnVictima").onclick = () => modalVictima.style.display = "flex";
-        document.getElementById("btnDenunciado").onclick = () => modalDenunciado.style.display = "flex";
+        document.getElementById("btnVictima").onclick = () => {
+          modalVictima.style.display = "flex";
+          document.getElementById('victima_nombre').focus();
+        };
+        
+        document.getElementById("btnDenunciado").onclick = () => {
+          modalDenunciado.style.display = "flex";
+          document.getElementById('denunciado_nombre').focus();
+        };
         
         document.getElementById("closeVictima").onclick = () => modalVictima.style.display = "none";
         document.getElementById("closeDenunciado").onclick = () => modalDenunciado.style.display = "none";
@@ -359,13 +979,30 @@
           
           // Validar campos requeridos
           const camposRequeridos = ['tipo_incidente', 'hechos', 'referencia', 'departamento', 'provincia', 'distrito'];
+          const camposInvalidos = [];
+          
           for (const campoId of camposRequeridos) {
             const campo = document.getElementById(campoId);
             if (!campo.value.trim()) {
-              alert(`Por favor completa el campo: ${campo.previousElementSibling.textContent}`);
-              campo.focus();
-              return;
+              camposInvalidos.push(campo);
+              campo.style.borderColor = '#dc3545';
+            } else {
+              campo.style.borderColor = '#28a745';
             }
+          }
+          
+          if (camposInvalidos.length > 0) {
+            mostrarMensaje(`Completa ${camposInvalidos.length} campo(s) obligatorio(s)`, 'warning');
+            camposInvalidos[0].focus();
+            
+            // Quitar borde rojo después de 3 segundos
+            setTimeout(() => {
+              camposInvalidos.forEach(campo => {
+                campo.style.borderColor = '#e9ecef';
+              });
+            }, 3000);
+            
+            return;
           }
           
           // Cambiar estado del botón
@@ -374,6 +1011,19 @@
           btnEnviar.disabled = true;
           
           try {
+            // Recolectar datos adicionales
+            const datosVictima = {
+              nombre: document.getElementById('victima_nombre')?.value || '',
+              dni: document.getElementById('victima_dni')?.value || '',
+              telefono: document.getElementById('victima_telefono')?.value || ''
+            };
+            
+            const datosDenunciado = {
+              nombre: document.getElementById('denunciado_nombre')?.value || '',
+              dni: document.getElementById('denunciado_dni')?.value || '',
+              telefono: document.getElementById('denunciado_telefono')?.value || ''
+            };
+            
             // Preparar datos para Supabase
             const datosDenuncia = {
               titulo: document.getElementById('tipo_incidente').value,
@@ -388,7 +1038,16 @@
               fecha_incidente: document.getElementById('fecha').value,
               coordenadas: coordenadasSeleccionadas ? 
                 `${coordenadasSeleccionadas.lat}, ${coordenadasSeleccionadas.lng}` : null,
-              creado_en: new Date().toISOString()
+              creado_en: new Date().toISOString(),
+              tipo_formulario: 'denuncia',
+              victima_nombre: datosVictima.nombre,
+              victima_dni: datosVictima.dni,
+              victima_telefono: datosVictima.telefono,
+              denunciado_nombre: datosDenunciado.nombre,
+              denunciado_dni: datosDenunciado.dni,
+              denunciado_telefono: datosDenunciado.telefono,
+              usuario_email: 'usuario@example.com', // Cambiar por usuario real
+              user_id: null
             };
             
             console.log('📤 Enviando a Supabase:', datosDenuncia);
@@ -407,11 +1066,19 @@
             console.log('✅ Denuncia guardada con ID:', data[0].id);
             
             // Mostrar mensaje de éxito
-            alert(`✅ ¡Denuncia registrada exitosamente!\n\nNúmero de seguimiento: CR-${data[0].id}\nPuedes ver el estado en la página de consultas.`);
+            mostrarMensaje(`✅ ¡Denuncia registrada exitosamente!<br>Número de seguimiento: CR-${data[0].id}`, 'success');
             
             // Limpiar formulario
             form.reset();
             document.getElementById('fecha').valueAsDate = new Date();
+            
+            // Limpiar modales
+            document.getElementById('victima_nombre').value = '';
+            document.getElementById('victima_dni').value = '';
+            document.getElementById('victima_telefono').value = '';
+            document.getElementById('denunciado_nombre').value = '';
+            document.getElementById('denunciado_dni').value = '';
+            document.getElementById('denunciado_telefono').value = '';
             
             // Limpiar mapa
             if (marcador) {
@@ -420,15 +1087,16 @@
               coordenadasSeleccionadas = null;
             }
             
-            // Redirigir después de 2 segundos
+            // Redirigir después de 3 segundos
             setTimeout(() => {
               window.location.href = 'consultas.html';
-            }, 2000);
+            }, 3000);
             
           } catch (error) {
             console.error('❌ Error al enviar:', error);
-            alert(`❌ Error al registrar la denuncia:\n${error.message}`);
+            mostrarMensaje(`❌ Error al registrar la denuncia: ${error.message}`, 'error');
             
+          } finally {
             // Restaurar botón
             btnEnviar.innerHTML = textoOriginal;
             btnEnviar.disabled = false;
@@ -441,14 +1109,19 @@
       // ==================== CONFIGURAR LOGOUT ====================
       document.getElementById("logoutBtn").addEventListener("click", function() {
         if (confirm("¿Estás seguro de cerrar sesión?")) {
-          window.location.href = "index.html";
+          mostrarMensaje('Cerrando sesión...', 'info');
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1500);
         }
       });
       
       // ==================== INICIALIZAR TODO ====================
       function inicializarTodo() {
         // 1. Poner fecha actual
-        document.getElementById('fecha').valueAsDate = new Date();
+        const hoy = new Date();
+        document.getElementById('fecha').valueAsDate = hoy;
+        document.getElementById('fecha').max = hoy.toISOString().split('T')[0]; // No permitir fechas futuras
         
         // 2. Inicializar mapa
         inicializarMapa();
@@ -460,6 +1133,7 @@
         configurarFormulario();
         
         console.log('✅ Aplicación completamente inicializada');
+        mostrarMensaje('Formulario cargado correctamente', 'success');
       }
       
       // EJECUTAR INICIALIZACIÓN
