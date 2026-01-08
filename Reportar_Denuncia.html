@@ -3,46 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reportar / Denunciar - Cusco Reporta</title>
-
+  <title>Registrar Denuncia - Cusco Reporta</title>
   <link rel="stylesheet" href="../css/styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- Leaflet (Mapa) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    .card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:18px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .grid-1{display:grid;grid-template-columns:1fr;gap:14px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-weight:800;font-size:.9rem}
-    .badge-ok{background:#e8f7ea;color:#1c6b2a}
-    .badge-warn{background:#fff3cd;color:#856404}
-    .badge-info{background:#e7f1ff;color:#0b3d91}
-    label{display:block;font-weight:800;margin-bottom:6px}
-    input,select,textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px}
-    textarea{min-height:110px;resize:vertical}
-    .btn{border:none;border-radius:10px;padding:12px 14px;font-weight:900;cursor:pointer}
-    .btn-primary{background:#8b0000;color:#fff}
-    .btn-outline{background:#fff;border:1px solid #ccc}
-    .muted{color:#666}
-    .error{color:#b00020;font-weight:800}
-    .ok{color:#1c6b2a;font-weight:800}
-    .map-wrap{border:1px solid #e5e5e5;border-radius:12px;overflow:hidden}
-    #map{width:100%;height:320px}
-    .hint{font-size:.9rem;color:#555;margin-top:6px}
-    .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .pill{padding:6px 10px;border-radius:999px;background:#f4f4f4;font-weight:800;font-size:.85rem;color:#444}
-    .section-title{margin: 16px 0 10px; font-weight: 900; color:#333;}
-    .hr{margin:18px 0; border:none; border-top:1px solid #eee;}
-    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+    #mapContainer { height: 300px; width: 100%; border-radius: 8px; }
+    .fila { display: flex; flex-wrap: wrap; gap: 30px; }
+    .columna { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
+    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000; }
+    .modal-content { background:#fff; padding:20px; border-radius:8px; width:90%; max-width:400px; }
+    .modal-content h3 { margin-top:0; }
+    .close-modal { float:right; cursor:pointer; font-size:18px; font-weight:bold; }
+    textarea { width:100%; min-height:100px; padding:8px; border-radius:5px; border:1px solid #ccc; resize:none; }
   </style>
 </head>
-
 <body>
-  <!-- TOPBAR -->
+  <!-- NAVBAR SUPERIOR -->
   <header class="topbar">
     <div class="topbar__logo">
       <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
@@ -54,507 +31,170 @@
     </nav>
   </header>
 
-  <div class="container">
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="container" style="display:flex; gap:20px;">
     <!-- SIDEBAR -->
-    <aside class="sidebar" style="display:flex;flex-direction:column;justify-content:flex-start;">
+    <aside class="sidebar" style="display:flex; flex-direction:column; justify-content:flex-start;">
       <div class="sidebar__user" style="margin-bottom:10px;">
         <div class="sidebar__avatar"><i class="fa-solid fa-user"></i></div>
-        <div class="sidebar__info">
-          <h3 id="nombreUsuario">Invitado</h3>
-          <p id="rolUsuario">—</p>
-        </div>
+        <div class="sidebar__info"><h3>Jose Pérez</h3><p>Ciudadano</p></div>
       </div>
 
-      <ul class="sidebar__menu" style="margin-top:0;padding-top:0;list-style:none;">
-        <li>
-          <a href="reportar_denuncia.html" class="active">
-            <i class="fa-solid fa-triangle-exclamation" style="width:20px;"></i>
-            <span style="margin-left:8px;">Reportar / Denunciar</span>
+      <ul class="sidebar__menu" style="margin-top: 0; padding-top: 0; list-style: none;">
+        <li style="display: flex; align-items: flex-start;">
+          <a href="perfil_usuario.html" >
+            <i class="fa-solid fa-id-card" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Ver perfil</span>
           </a>
         </li>
-        <li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="ReportarIncidencia.html">
+            <i class="fa-solid fa-pen-to-square" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Reportar</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="registrar_Denuncia.html"class="active">
+            <i class="fa-solid fa-triangle-exclamation" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Denunciar</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
           <a href="lista_incidencias.html">
-            <i class="fa-solid fa-list-check" style="width:20px;"></i>
+            <i class="fa-solid fa-list-check" style="width: 20px;"></i>
             <span style="margin-left:8px;">Estado de reportes</span>
           </a>
         </li>
-        <li>
+        <li style="display: flex; align-items: flex-start;">
           <a href="MapaIncidiencias(Ciudadano).html">
-            <i class="fa-solid fa-map-location-dot" style="width:20px;"></i>
+            <i class="fa-solid fa-map-location-dot" style="width: 20px;"></i>
             <span style="margin-left:8px;">Mapa de incidencias</span>
           </a>
         </li>
-        <li>
+        <li style="display: flex; align-items: flex-start;">
           <a href="notificaciones.html">
-            <i class="fa-solid fa-bell" style="width:20px;"></i>
+            <i class="fa-solid fa-bell" style="width: 20px;"></i>
             <span style="margin-left:8px;">Notificaciones</span>
           </a>
         </li>
       </ul>
 
-      <button class="logout-btn" id="logoutBtn" style="margin-top:auto;">
-        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-      </button>
+
+      <button class="logout-btn" id="logoutBtn" style="margin-top:auto;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
     </aside>
 
-    <!-- CONTENT -->
-    <main class="main-content">
-      <div class="row" style="justify-content:space-between;align-items:center;">
-        <div>
-          <h1>Reportar / Denunciar</h1>
-          <p class="muted">Registra una incidencia con sesión o en modo incógnito.</p>
-          <div class="inline" style="margin-top:8px;">
-            <span class="pill" id="pillModo">Modo: —</span>
-            <span class="pill" id="pillUser">Usuario: —</span>
-          </div>
-        </div>
-
-        <div id="modoBox" class="badge badge-warn">
-          <i class="fa-solid fa-user-secret"></i>
-          <span>Sesión anónima</span>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:12px;">
-        <form id="formInc">
-          <div class="grid">
-            <div>
-              <label for="fecha_incidente">Fecha</label>
-              <input type="date" id="fecha_incidente" required>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content denuncia-form" style="flex:1;">
+      <h1>Registrar Denuncia</h1>
+      <form id="formDenuncia" class="formulario">
+        <div class="fila">
+          <!-- IZQUIERDA -->
+          <div class="columna">
+            <div class="campo"><label for="fecha">Fecha</label><input type="text" id="fecha" placeholder="dd/mm/aaaa"></div>
+            <div class="campo"><label for="departamento">Departamento</label>
+              <select id="departamento"><option>Seleccione</option><option>Cusco</option></select>
             </div>
-
-            <div>
-              <label for="placa">Placa (opcional)</label>
-              <input id="placa" placeholder="Ej: X1A-123">
-              <small class="muted">Se guardará para permitir consulta por placa.</small>
+            <div class="campo"><label for="provincia">Provincia</label>
+              <select id="provincia"><option>Seleccione</option><option>Cusco</option></select>
             </div>
+            <div class="campo"><label for="distrito">Distrito</label>
+              <select id="distrito"><option>Seleccione</option><option>San Sebastián</option><option>San Jerónimo</option><option>Cusco</option></select>
+            </div>
+            <div class="campo"><label for="referencia">Referencia</label><input type="text" id="referencia" placeholder="Referencia del lugar"></div>
 
-            <div>
-              <label for="categoria_id">Categoría</label>
-              <select id="categoria_id" required>
-                <option value="">Cargando categorías...</option>
+            <!-- Tipo de incidente -->
+            <div class="campo">
+              <label for="tipo_incidente">Tipo de incidente</label>
+              <select id="tipo_incidente">
+                <option>Seleccione</option>
+                <option>Accidente</option>
+                <option>Choque</option>
+                <option>Mal estacionamiento</option>
+                <option>Robo</option>
+                <option value="otro">Otro</option>
               </select>
-              <small class="muted">Se carga desde tu BD (tabla categorías).</small>
+              <input type="text" id="otro_incidente" placeholder="Describa otro tipo de incidente" style="display:none; margin-top:5px;">
             </div>
 
-            <div>
-              <label for="referencia_lugar">Referencia del lugar</label>
-              <input id="referencia_lugar" placeholder="Ej: Cerca al paradero principal" required>
-            </div>
-          </div>
-
-          <div class="grid" style="margin-top:12px;">
-            <div>
-              <label for="titulo">Título</label>
-              <input id="titulo" placeholder="Ej: Bache en la vía / Conductor ebrio" required>
-            </div>
-            <div>
-              <label for="distrito">Distrito</label>
-              <input id="distrito" placeholder="Ej: Wanchaq" required>
+            <!-- Descripción de los hechos -->
+            <div class="campo">
+              <label for="hechos">Descripción de los hechos</label>
+              <textarea id="hechos" placeholder="Describa lo sucedido..."></textarea>
             </div>
           </div>
 
-          <div class="grid" style="margin-top:12px;">
-            <div>
-              <label for="departamento">Departamento</label>
-              <input id="departamento" value="Cusco">
+          <!-- DERECHA: DATOS Y MAPA -->
+          <div class="columna">
+            <div class="campo"><label>Ubicar en el mapa</label><div id="mapContainer"></div></div>
+            <div class="campo" style="display:flex; gap:10px;">
+              <button type="button" class="btn-secundario" id="btnVictima" style="flex:1;">Datos de la víctima</button>
+              <button type="button" class="btn-secundario" id="btnDenunciado" style="flex:1;">Datos del denunciado</button>
             </div>
-            <div>
-              <label for="provincia">Provincia</label>
-              <input id="provincia" value="Cusco">
-            </div>
+            <div class="campo" style="text-align:center;"><button type="submit" class="btn-principal" style="margin-top:15px;">Aceptar</button></div>
           </div>
-
-          <!-- MAPA -->
-          <div class="grid-1" style="margin-top:12px;">
-            <div>
-              <label>Ubicación en el mapa</label>
-              <div class="map-wrap">
-                <div id="map"></div>
-              </div>
-              <div class="hint">
-                Haz <b>click</b> en el mapa para marcar el punto o <b>arrastra</b> el marcador.
-                <span class="muted">(Se guardará lat/lng automáticamente)</span>
-              </div>
-
-              <input type="hidden" id="lat">
-              <input type="hidden" id="lng">
-            </div>
-          </div>
-
-          <div class="grid-1" style="margin-top:12px;">
-            <div>
-              <label for="descripcion">Descripción</label>
-              <textarea id="descripcion" placeholder="Describe lo sucedido..." required></textarea>
-            </div>
-
-            <div>
-              <label for="archivo">Evidencia (imagen opcional)</label>
-              <input type="file" id="archivo" accept="image/*">
-              <small class="muted">Se enviará como evidencia y se asociará a la incidencia.</small>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:14px;justify-content:flex-end;">
-            <button type="button" class="btn btn-outline" id="btnLimpiar">Limpiar</button>
-            <button type="submit" class="btn btn-primary" id="btnEnviar">
-              <i class="fa-solid fa-paper-plane"></i> Reportar
-            </button>
-          </div>
-
-          <div style="margin-top:10px;">
-            <p id="msg" class="muted"></p>
-          </div>
-        </form>
-
-        <hr class="hr">
-
-        <!-- CONSULTA POR PLACA -->
-        <div>
-          <div class="section-title">Consultar por placa</div>
-          <div class="row" style="align-items:center;">
-            <div style="flex:1; min-width:220px;">
-              <input id="placaConsulta" placeholder="Ej: X1A-123">
-            </div>
-            <button type="button" class="btn btn-outline" id="btnConsultarPlaca">
-              <i class="fa-solid fa-magnifying-glass"></i> Consultar
-            </button>
-          </div>
-
-          <div id="resultadoPlaca" class="muted" style="margin-top:10px;"></div>
         </div>
-      </div>
+      </form>
     </main>
   </div>
 
+  <!-- MODALES -->
+  <div class="modal" id="modalVictima">
+    <div class="modal-content">
+      <span class="close-modal" id="closeVictima">&times;</span>
+      <h3>Datos de la víctima</h3>
+      <input type="text" placeholder="Nombre"><br><br>
+      <input type="text" placeholder="DNI"><br><br>
+      <input type="text" placeholder="Teléfono">
+    </div>
+  </div>
+
+  <div class="modal" id="modalDenunciado">
+    <div class="modal-content">
+      <span class="close-modal" id="closeDenunciado">&times;</span>
+      <h3>Datos del denunciado</h3>
+      <input type="text" placeholder="Nombre"><br><br>
+      <input type="text" placeholder="DNI"><br><br>
+      <input type="text" placeholder="Teléfono">
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // ================== CONFIG ==================
-    const API_BASE = "http://localhost:3000";
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", ()=>window.location.href="index.html");
 
-    // ================== HELPERS ==================
-    const $ = (id) => document.getElementById(id);
+    // Mapa de Cusco
+    const map = L.map('mapContainer').setView([-13.5171,-71.9784],15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'&copy; OpenStreetMap contributors', maxZoom:19
+    }).addTo(map);
 
-    function hoyISO() {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
-    }
+    let marcador = null;
+    map.on('click', function(e){
+      if(marcador) map.removeLayer(marcador);
+      marcador = L.marker(e.latlng).addTo(map)
+        .bindPopup(`Ubicación seleccionada: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`)
+        .openPopup();
+    });
 
-    function normalizePlaca(p) {
-      return String(p || "")
-        .trim()
-        .toUpperCase()
-        .replace(/\s+/g, "")
-        .replace(/[^A-Z0-9-]/g, "");
-    }
+    // Modales
+    const modalVictima = document.getElementById("modalVictima");
+    const modalDenunciado = document.getElementById("modalDenunciado");
+    document.getElementById("btnVictima").onclick = ()=>modalVictima.style.display="flex";
+    document.getElementById("btnDenunciado").onclick = ()=>modalDenunciado.style.display="flex";
+    document.getElementById("closeVictima").onclick = ()=>modalVictima.style.display="none";
+    document.getElementById("closeDenunciado").onclick = ()=>modalDenunciado.style.display="none";
+    window.onclick = (e)=>{
+      if(e.target==modalVictima) modalVictima.style.display="none";
+      if(e.target==modalDenunciado) modalDenunciado.style.display="none";
+    };
 
-    function setMsg(text, kind = "muted") {
-      const el = $("msg");
-      if (!el) return;
-      el.className = kind;
-      el.textContent = text || "";
-    }
-
-    async function safeJson(res) {
-      const ct = res.headers.get("content-type") || "";
-      if (ct.includes("application/json")) return res.json();
-      const txt = await res.text();
-      return { ok: false, message: txt || "Respuesta no JSON" };
-    }
-
-    function getUserFromStorage() {
-      try {
-        const raw = localStorage.getItem("user");
-        return raw ? JSON.parse(raw) : null;
-      } catch {
-        return null;
-      }
-    }
-
-    function getModo() {
-      const modo = localStorage.getItem("modo_denuncia"); // incognito | identificado
-      const token = localStorage.getItem("token");
-      const user = getUserFromStorage();
-
-      if (modo === "incognito") return { modo: "incognito", token: null, user: null };
-      if (token) return { modo: "identificado", token, user };
-      return { modo: "incognito", token: null, user: null };
-    }
-
-    function pintarModo() {
-      const { modo, user } = getModo();
-
-      const nombreEl = $("nombreUsuario");
-      const rolEl = $("rolUsuario");
-      const box = $("modoBox");
-      const pillModo = $("pillModo");
-      const pillUser = $("pillUser");
-
-      if (modo === "identificado") {
-        box.className = "badge badge-ok";
-        box.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>Sesión identificada</span>`;
-        pillModo.textContent = "Modo: Identificado";
-
-        const name = user?.nombre_completo || user?.username || "Usuario";
-        pillUser.textContent = `Usuario: ${name}`;
-
-        nombreEl.textContent = name;
-        rolEl.textContent = (user?.rol_id === 2) ? "Administrador" : "Ciudadano";
-      } else {
-        box.className = "badge badge-warn";
-        box.innerHTML = `<i class="fa-solid fa-user-secret"></i><span>Sesión anónima</span>`;
-        pillModo.textContent = "Modo: Anónimo";
-        pillUser.textContent = "Usuario: Invitado";
-
-        nombreEl.textContent = "Invitado";
-        rolEl.textContent = "—";
-      }
-    }
-
-    // ================== MAPA ==================
-    let map, marker;
-
-    function setLatLng(lat, lng) {
-      $("lat").value = String(lat);
-      $("lng").value = String(lng);
-    }
-
-    function initMap() {
-      const defaultLat = -13.53195;
-      const defaultLng = -71.96746;
-
-      map = L.map("map").setView([defaultLat, defaultLng], 14);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "© OpenStreetMap"
-      }).addTo(map);
-
-      marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
-
-      setLatLng(defaultLat, defaultLng);
-
-      map.on("click", (e) => {
-        const { lat, lng } = e.latlng;
-        marker.setLatLng([lat, lng]);
-        setLatLng(lat, lng);
-      });
-
-      marker.on("dragend", () => {
-        const p = marker.getLatLng();
-        setLatLng(p.lat, p.lng);
-      });
-    }
-
-    // ================== CATEGORÍAS (DESDE BD) ==================
-    function normalizarCategorias(payload) {
-      // soporta: {ok:true, categorias:[...]}  o array directo
-      if (Array.isArray(payload)) return payload;
-      if (payload && Array.isArray(payload.categorias)) return payload.categorias;
-      if (payload && Array.isArray(payload.data)) return payload.data;
-      if (payload && Array.isArray(payload.rows)) return payload.rows;
-      return [];
-    }
-
-    async function cargarCategorias() {
-      const sel = $("categoria_id");
-      sel.innerHTML = `<option value="">Cargando categorías...</option>`;
-
-      try {
-        // tu endpoint backend: /categorias_incidencia
-        const res = await fetch(`${API_BASE}/categorias_incidencia`);
-        const data = await safeJson(res);
-
-        const cats = normalizarCategorias(data);
-
-        if (!res.ok || !cats.length) {
-          sel.innerHTML = `<option value="">No se pudieron cargar categorías</option>`;
-          return;
-        }
-
-        sel.innerHTML = `<option value="">Seleccione una categoría</option>`;
-
-        cats.forEach((c) => {
-          const id = c.id ?? c.categoria_id ?? c.categorias_incidencia_id;
-          const nombre = c.nombre ?? c.categoria ?? c.descripcion ?? c.titulo;
-          if (id == null || !nombre) return;
-
-          const opt = document.createElement("option");
-          opt.value = String(id);
-          opt.textContent = String(nombre);
-          sel.appendChild(opt);
-        });
-
-        if (sel.options.length <= 1) {
-          sel.innerHTML = `<option value="">No se pudieron interpretar categorías</option>`;
-        }
-      } catch (e) {
-        console.error(e);
-        sel.innerHTML = `<option value="">No se pudieron cargar categorías</option>`;
-      }
-    }
-
-    // ================== REGISTRAR INCIDENCIA ==================
-    async function registrarIncidencia(e) {
-      e.preventDefault();
-      setMsg("Registrando reporte...", "muted");
-
-      const fecha = $("fecha_incidente");
-      const categoria = $("categoria_id");
-      const placa = $("placa");
-      const titulo = $("titulo");
-      const referencia = $("referencia_lugar");
-      const distrito = $("distrito");
-      const departamento = $("departamento");
-      const provincia = $("provincia");
-      const descripcion = $("descripcion");
-      const lat = $("lat");
-      const lng = $("lng");
-      const archivo = $("archivo");
-
-      if (!fecha.value || !categoria.value || !titulo.value.trim() || !referencia.value.trim() || !distrito.value.trim() || !descripcion.value.trim()) {
-        setMsg("Completa los campos obligatorios.", "error");
-        return;
-      }
-
-      const fd = new FormData();
-      fd.append("fecha_incidente", fecha.value);
-      fd.append("categoria_id", categoria.value);
-
-      const placaNorm = normalizePlaca(placa.value);
-      if (placaNorm) fd.append("placa", placaNorm);
-
-      fd.append("titulo", titulo.value.trim());
-      fd.append("referencia_lugar", referencia.value.trim());
-      fd.append("distrito", distrito.value.trim());
-      fd.append("departamento", (departamento.value || "Cusco").trim());
-      fd.append("provincia", (provincia.value || "Cusco").trim());
-      fd.append("descripcion", descripcion.value.trim());
-
-      if (lat.value) fd.append("lat", lat.value);
-      if (lng.value) fd.append("lng", lng.value);
-
-      const { modo, token, user } = getModo();
-      fd.append("modo", modo);
-      // si tu backend acepta usuario_id (recomendado)
-      fd.append("usuario_id", user?.id ? String(user.id) : "");
-
-      if (archivo.files && archivo.files[0]) {
-        fd.append("archivo", archivo.files[0]); // multer.single("archivo")
-      }
-
-      const headers = {};
-      if (token && modo === "identificado") headers["Authorization"] = `Bearer ${token}`;
-
-      try {
-        // ✅ tu backend actual: POST /incidencias
-        const res = await fetch(`${API_BASE}/incidencias`, {
-          method: "POST",
-          headers,
-          body: fd
-        });
-
-        const data = await safeJson(res);
-
-        if (!res.ok || !data.ok) {
-          setMsg(data.message || `Error HTTP ${res.status}`, "error");
-          return;
-        }
-
-        setMsg(`✅ Reporte registrado correctamente (ID: ${data.id ?? "OK"}).`, "ok");
-
-        // autollenar consulta con la placa si ingresó
-        if (placaNorm) $("placaConsulta").value = placaNorm;
-
-        // reset
-        $("formInc").reset();
-        $("fecha_incidente").value = hoyISO();
-      } catch (err) {
-        console.error(err);
-        setMsg("❌ Error de conexión con el servidor (backend).", "error");
-      }
-    }
-
-    function limpiarFormulario() {
-      $("fecha_incidente").value = hoyISO();
-      $("placa").value = "";
-      $("categoria_id").value = "";
-      $("referencia_lugar").value = "";
-      $("titulo").value = "";
-      $("departamento").value = "Cusco";
-      $("provincia").value = "Cusco";
-      $("distrito").value = "";
-      $("descripcion").value = "";
-      $("archivo").value = "";
-      setMsg("", "muted");
-    }
-
-    // ================== CONSULTA POR PLACA ==================
-    async function consultarPlaca() {
-      const placa = normalizePlaca($("placaConsulta").value);
-      const out = $("resultadoPlaca");
-
-      if (!placa) {
-        out.textContent = "⚠️ Ingresa una placa válida.";
-        out.className = "error";
-        return;
-      }
-
-      out.textContent = "Consultando...";
-      out.className = "muted";
-
-      try {
-        // ✅ tu backend actual: GET /incidencias/placa?placa=XXXX
-        const res = await fetch(`${API_BASE}/incidencias/placa?placa=${encodeURIComponent(placa)}`);
-        const data = await safeJson(res);
-
-        if (!res.ok || !data.ok) {
-          out.textContent = data.message || `Error HTTP ${res.status}`;
-          out.className = "error";
-          return;
-        }
-
-        if (data.reportado) {
-          out.innerHTML = `🚨 <b>PLACA REPORTADA</b><br>Registros: ${data.total ?? 0}`;
-          out.className = "error";
-        } else {
-          out.textContent = `✅ Placa ${placa} NO tiene reportes.`;
-          out.className = "ok";
-        }
-      } catch (err) {
-        console.error(err);
-        out.textContent = "❌ Error de conexión con el servidor.";
-        out.className = "error";
-      }
-    }
-
-    // ================== INIT ==================
-    document.addEventListener("DOMContentLoaded", async () => {
-      pintarModo();
-
-      $("fecha_incidente").value = hoyISO();
-
-      // Leaflet cargado con defer: ya debe existir
-      initMap();
-
-      // cargar categorías desde tu BD
-      await cargarCategorias();
-
-      $("btnLimpiar").addEventListener("click", limpiarFormulario);
-      $("formInc").addEventListener("submit", registrarIncidencia);
-
-      $("btnConsultarPlaca").addEventListener("click", consultarPlaca);
-
-      $("logoutBtn").addEventListener("click", () => {
-        if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          localStorage.setItem("modo_denuncia", "incognito");
-          window.location.href = "index.html";
-        }
-      });
+    // Mostrar campo "Otro" si se selecciona
+    const tipoSelect = document.getElementById("tipo_incidente");
+    const otroInput = document.getElementById("otro_incidente");
+    tipoSelect.addEventListener("change", function(){
+      otroInput.style.display = (this.value==="otro") ? "block":"none";
     });
   </script>
 </body>
