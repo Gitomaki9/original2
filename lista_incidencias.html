@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Estado de Reportes - Cusco Reporta</title>
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <!-- Incluir Supabase JS -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -363,21 +363,6 @@
       }
     }
     
-    @media (max-width: 480px) {
-      .container {
-        flex-direction: column;
-      }
-      
-      .sidebar {
-        width: 100%;
-        margin-bottom: 20px;
-      }
-      
-      .main-content {
-        width: 100%;
-      }
-    }
-    
     /* Estado vacío */
     .empty-state {
       text-align: center;
@@ -424,11 +409,11 @@
     </nav>
   </header>
 
-  <!-- CONTENEDOR PRINCIPAL - Estructura consistente -->
+  <!-- CONTENEDOR PRINCIPAL - Estructura idéntica a perfil_usuario.html -->
   <div class="container">
-    <!-- SIDEBAR IZQUIERDA - Organizada como perfil_usuario.html -->
-    <aside class="sidebar">
-      <div class="sidebar__user">
+    <!-- SIDEBAR IZQUIERDO - EXACTAMENTE como perfil_usuario.html -->
+    <aside class="sidebar" style="display: flex; flex-direction: column; justify-content: flex-start;">
+      <div class="sidebar__user" style="margin-bottom: 10px;">
         <div class="sidebar__avatar">
           <i class="fa-solid fa-user" id="userAvatar"></i>
         </div>
@@ -438,42 +423,47 @@
         </div>
       </div>
 
-      <!-- Menú vertical organizado -->
-      <ul class="sidebar__menu">
-        <li>
+      <!-- Menú del usuario - Mismo formato que perfil_usuario.html -->
+      <ul class="sidebar__menu" style="margin-top: 0; padding-top: 0; list-style: none;">
+        <li style="display: flex; align-items: flex-start;">
           <a href="perfil_usuario.html">
-            <i class="fa-solid fa-id-card"></i>
-            <span>Ver perfil</span>
+            <i class="fa-solid fa-id-card" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Ver perfil</span>
           </a>
         </li>
-        <li>
-          <a href="reportar_denuncia.html">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span>Reportar / Denunciar</span>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="ReportarIncidencia.html">
+            <i class="fa-solid fa-pen-to-square" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Reportar</span>
           </a>
         </li>
-        <li>
+        <li style="display: flex; align-items: flex-start;">
+          <a href="registrar_Denuncia.html">
+            <i class="fa-solid fa-triangle-exclamation" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Denunciar</span>
+          </a>
+        </li>
+        <li style="display: flex; align-items: flex-start;">
           <a href="lista_incidencias.html" class="active">
-            <i class="fa-solid fa-list-check"></i>
-            <span>Estado de reportes</span>
+            <i class="fa-solid fa-list-check" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Estado de reportes</span>
           </a>
         </li>
-        <li>
+        <li style="display: flex; align-items: flex-start;">
           <a href="MapaIncidiencias(Ciudadano).html">
-            <i class="fa-solid fa-map-location-dot"></i>
-            <span>Mapa de incidencias</span>
+            <i class="fa-solid fa-map-location-dot" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Mapa de incidencias</span>
           </a>
         </li>
-        <li>
+        <li style="display: flex; align-items: flex-start;">
           <a href="notificaciones.html">
-            <i class="fa-solid fa-bell"></i>
-            <span>Notificaciones</span>
+            <i class="fa-solid fa-bell" style="width: 20px;"></i>
+            <span style="margin-left:8px;">Notificaciones</span>
           </a>
         </li>
       </ul>
 
-      <!-- Botón de cerrar sesión -->
-      <button class="logout-btn" id="logoutBtn">
+      <button class="logout-btn" id="logoutBtn" style="margin-top: auto;">
         <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
       </button>
     </aside>
@@ -481,34 +471,34 @@
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
       <!-- Encabezado de la página -->
-      <div class="page-header">
-        <h1><i class="fa-solid fa-clipboard-list"></i> Estado de Reportes</h1>
-        <p class="page-subtitle">
-          Consulta el estado de tus reportes y denuncias: tipo, categoría, ubicación, estado y detalles.
+      <section class="perfil-container">
+        <h1>Estado de Reportes</h1>
+        <p style="color: #666; margin-top: 5px;">
+          Consulta el estado de tus reportes y denuncias registradas.
         </p>
-      </div>
+      </section>
 
       <!-- Contenedor principal de reportes -->
       <div class="reports-container">
         <!-- Cabecera con filtros -->
         <div class="reports-header">
-          <h2><i class="fa-solid fa-filter"></i> FILTRAR INCIDENCIAS</h2>
+          <h2>FILTRAR INCIDENCIAS</h2>
           
           <div class="date-filters">
             <!-- Filtros de fecha -->
             <div class="filter-group">
-              <label for="fecha-inicio"><i class="fa-solid fa-calendar-day"></i> Desde</label>
+              <label for="fecha-inicio">Desde</label>
               <input type="date" id="fecha-inicio">
             </div>
 
             <div class="filter-group">
-              <label for="fecha-fin"><i class="fa-solid fa-calendar-day"></i> Hasta</label>
+              <label for="fecha-fin">Hasta</label>
               <input type="date" id="fecha-fin">
             </div>
 
             <!-- Filtro de estado -->
             <div class="filter-group">
-              <label for="estado"><i class="fa-solid fa-circle-info"></i> Estado</label>
+              <label for="estado">Estado</label>
               <select id="estado">
                 <option value="todos">Todos los estados</option>
                 <option value="reporte">Reportado (Recibido)</option>
@@ -520,7 +510,7 @@
 
             <!-- Filtro de búsqueda por texto -->
             <div class="filter-group">
-              <label for="busqueda"><i class="fa-solid fa-search"></i> Buscar</label>
+              <label for="busqueda">Buscar</label>
               <div style="display: flex; gap: 5px;">
                 <input type="text" id="busqueda" placeholder="Placa, nombre, ID...">
                 <button id="btnBuscarTermino" class="btn btn-outline" type="button" title="Buscar">
@@ -537,16 +527,13 @@
               <button class="btn btn-outline" id="btnLimpiar" type="button">
                 <i class="fa-solid fa-broom"></i> Limpiar
               </button>
-              <button class="btn btn-outline" id="btnRefrescar" type="button" title="Refrescar">
-                <i class="fa-solid fa-arrows-rotate"></i>
-              </button>
             </div>
           </div>
         </div>
 
         <!-- Tabla de reportes -->
         <div class="reports-table">
-          <h3><i class="fa-solid fa-table-list"></i> REPORTES RECIBIDOS</h3>
+          <h3>REPORTES RECIBIDOS</h3>
 
           <!-- Información de estado y conteo -->
           <div class="meta-row">
@@ -557,9 +544,6 @@
             <span class="meta-pill" id="estadoCarga">
               <i class="fa-solid fa-circle-check"></i> Listo
             </span>
-            <span class="meta-pill" id="filtroAplicado" style="display: none;">
-              <i class="fa-solid fa-filter"></i> Filtros aplicados
-            </span>
           </div>
 
           <!-- Contenedor de tabla con scroll -->
@@ -567,14 +551,14 @@
             <table>
               <thead>
                 <tr>
-                  <th><i class="fa-solid fa-hashtag"></i> ID</th>
-                  <th><i class="fa-solid fa-calendar"></i> Fecha</th>
-                  <th><i class="fa-solid fa-file-lines"></i> Tipo</th>
-                  <th><i class="fa-solid fa-tag"></i> Categoría</th>
-                  <th><i class="fa-solid fa-heading"></i> Título</th>
-                  <th><i class="fa-solid fa-location-dot"></i> Ubicación</th>
-                  <th><i class="fa-solid fa-circle-dot"></i> Estado</th>
-                  <th><i class="fa-solid fa-eye"></i> Acciones</th>
+                  <th>ID</th>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Categoría</th>
+                  <th>Título</th>
+                  <th>Ubicación</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody id="tbodyInc">
@@ -633,5 +617,41 @@
   <!-- Primero supabase.js, luego lista_incidencias.js -->
   <script src="../js/supabase.js"></script>
   <script src="../js/lista_incidencias.js"></script>
+  
+  <script>
+    // Script adicional para manejar la barra lateral
+    document.addEventListener('DOMContentLoaded', function() {
+      // Asegurar que la clase active se aplique correctamente
+      const currentPage = window.location.pathname.split('/').pop();
+      const menuLinks = document.querySelectorAll('.sidebar__menu a');
+      
+      menuLinks.forEach(link => {
+        const linkPage = link.getAttribute('href');
+        if (linkPage === currentPage || (currentPage === '' && linkPage === 'index.html')) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+      
+      // Manejar logout
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function() {
+          if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+            try {
+              if (window.supabaseClient) {
+                await window.supabaseClient.auth.signOut();
+              }
+              window.location.href = 'index.html';
+            } catch (error) {
+              console.error('Error al cerrar sesión:', error);
+              window.location.href = 'index.html';
+            }
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
