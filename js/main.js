@@ -1,144 +1,150 @@
-console.log("Cusco Reporta — Página inicial cargada correctamente");
+console.log("Cusco Reporta — JS cargado");
 
-// Para iniciar sesión:
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("form");
+// ========= UTIL =========
+function onReady(fn) {
+  document.addEventListener("DOMContentLoaded", fn);
+}
 
-  if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault(); // Evita que la página se recargue
+// ========= LOGIN (solo si existe #formLogin) =========
+onReady(() => {
+  const formLogin = document.getElementById("formLogin");
+  if (!formLogin) return;
 
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (!username || !password) {
-        alert("Por favor, complete ambos campos.");
-        return;
-      }
-
-      alert("¡Inicio de sesión exitoso!");
-      // Redirigir a una página que aún no existe
-      window.location.href = "panel.html";
-    });
-  }
-});
-// Redirigir al hacer clic en "Cerrar sesión"
-document.addEventListener("DOMContentLoaded", () => {
-  const logoutBtn = document.querySelector(".logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      // Aquí puedes limpiar datos de sesión si luego los usas
-      alert("Sesión cerrada correctamente.");
-      window.location.href = "index.html";
-    });
-  }
-});
-
-// PARA REGISTARA DENUNCIA: 
-document.addEventListener('DOMContentLoaded', () => {
-  const mapContainer = document.getElementById('mapContainer');
-  const btnMapa = document.getElementById('btnMapa');
-  const form = document.getElementById('formDenuncia');
-
-  btnMapa.addEventListener('click', () => {
-    mapContainer.textContent = 'Haga clic en el mapa para seleccionar ubicación';
-    mapContainer.style.cursor = 'pointer';
-
-    mapContainer.addEventListener('click', () => {
-      mapContainer.textContent = 'Ubicación seleccionada ✓';
-      mapContainer.style.backgroundColor = '#d4edda';
-      mapContainer.style.color = '#155724';
-      mapContainer.style.cursor = 'default';
-    }, { once: true });
-  });
-
-  form.addEventListener('submit', (e) => {
+  formLogin.addEventListener("submit", async (e) => {
     e.preventDefault();
-    alert('Denuncia enviada correctamente. Recibirá un número de seguimiento.');
+
+    const username = document.getElementById("username")?.value.trim();
+    const password = document.getElementById("password")?.value.trim();
+
+    if (!username || !password) {
+      alert("Por favor, complete ambos campos.");
+      return;
+    }
+
+    // ✅ Aquí luego conectas con tu API real (/auth/login)
+    // Por ahora solo redirige (o comenta esto cuando ya uses login.js)
+    alert("¡Inicio de sesión enviado!");
+    window.location.href = "panel.html";
+  });
+});
+
+// ========= LOGOUT (solo si existe .logout-btn) =========
+onReady(() => {
+  const logoutBtn = document.querySelector(".logout-btn");
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    alert("Sesión cerrada correctamente.");
+    window.location.href = "index.html";
+  });
+});
+
+// ========= REGISTRAR DENUNCIA (solo si existen los 3 elementos) =========
+onReady(() => {
+  const mapContainer = document.getElementById("mapContainer");
+  const btnMapa = document.getElementById("btnMapa");
+  const formDenuncia = document.getElementById("formDenuncia");
+
+  if (!mapContainer || !btnMapa || !formDenuncia) return;
+
+  btnMapa.addEventListener("click", () => {
+    mapContainer.textContent = "Haga clic en el mapa para seleccionar ubicación";
+    mapContainer.style.cursor = "pointer";
+
+    mapContainer.addEventListener(
+      "click",
+      () => {
+        mapContainer.textContent = "Ubicación seleccionada ✓";
+        mapContainer.style.backgroundColor = "#d4edda";
+        mapContainer.style.color = "#155724";
+        mapContainer.style.cursor = "default";
+      },
+      { once: true }
+    );
   });
 
-  // ==================== FUNCIONALIDAD PARA NOTIFICACIONES ====================
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Agregar event listeners a los botones de marcar como leído
-    document.querySelectorAll('.btn-mark-read').forEach(button => {
-        button.addEventListener('click', function() {
-            const notificationItem = this.closest('.notification-item');
-            markAsRead(notificationItem);
-        });
-    });
+  formDenuncia.addEventListener("submit", (e) => {
+    e.preventDefault();
+    alert("Denuncia enviada correctamente. Recibirá un número de seguimiento.");
+  });
 });
 
-function markAsRead(notificationItem) {
-    // Cambiar a estado leído
-    notificationItem.classList.add('read');
-    
-    // Cambiar el botón por texto "Leída"
-    const actions = notificationItem.querySelector('.notification-actions');
-    actions.innerHTML = '<span class="read-status">Leída</span>';
-    
-    // Actualizar contador
+// ========= NOTIFICACIONES (solo si hay .notification-item) =========
+onReady(() => {
+  const items = document.querySelectorAll(".notification-item");
+  if (!items.length) return;
+
+  document.querySelectorAll(".btn-mark-read").forEach((button) => {
+    button.addEventListener("click", function () {
+      const notificationItem = this.closest(".notification-item");
+      if (!notificationItem) return;
+      markAsRead(notificationItem);
+    });
+  });
+
+  function markAsRead(notificationItem) {
+    notificationItem.classList.add("read");
+    const actions = notificationItem.querySelector(".notification-actions");
+    if (actions) actions.innerHTML = '<span class="read-status">Leída</span>';
     updateNotificationCount();
-}
+  }
 
-function updateNotificationCount() {
-    const unreadCount = document.querySelectorAll('.notification-item:not(.read)').length;
-    console.log('Notificaciones no leídas:', unreadCount);
-}
+  function updateNotificationCount() {
+    const unreadCount = document.querySelectorAll(".notification-item:not(.read)").length;
+    console.log("Notificaciones no leídas:", unreadCount);
+  }
 
-// Función para marcar todas como leídas
-function markAllAsRead() {
-    document.querySelectorAll('.notification-item:not(.read)').forEach(item => {
-        markAsRead(item);
+  // Si usas estos botones en tu HTML, les puedes dar id y enlazarlos aquí
+  window.markAllAsRead = function () {
+    document.querySelectorAll(".notification-item:not(.read)").forEach(markAsRead);
+  };
+
+  window.filterUnreadOnly = function () {
+    document.querySelectorAll(".notification-item.read").forEach((item) => {
+      item.style.display = "none";
     });
-}
+  };
 
-// Función para filtrar solo no leídas
-function filterUnreadOnly() {
-    document.querySelectorAll('.notification-item.read').forEach(item => {
-        item.style.display = 'none';
+  window.showAll = function () {
+    document.querySelectorAll(".notification-item").forEach((item) => {
+      item.style.display = "block";
     });
-}
-
-// Función para mostrar todas
-function showAll() {
-    document.querySelectorAll('.notification-item').forEach(item => {
-        item.style.display = 'block';
-    });
-}
+  };
 });
 
-
-// PARA PERFIL DE USUARIO: Editar / Guardar
-document.addEventListener("DOMContentLoaded", function() {
+// ========= PERFIL (solo si existe #btnEditarPerfil) =========
+onReady(() => {
   const btnEditar = document.getElementById("btnEditarPerfil");
   const inputs = document.querySelectorAll(".campo-perfil");
 
-  if (btnEditar) { // Solo se ejecuta en la página del perfil
-    let modoEdicion = false;
+  if (!btnEditar) return;
 
-    btnEditar.addEventListener("click", function() {
-      modoEdicion = !modoEdicion;
+  let modoEdicion = false;
 
-      inputs.forEach(input => {
-        input.disabled = !modoEdicion;
-      });
+  btnEditar.addEventListener("click", () => {
+    modoEdicion = !modoEdicion;
 
-      if (modoEdicion) {
-        btnEditar.textContent = "Guardar Cambios";
-        btnEditar.style.backgroundColor = "#004aad";
-      } else {
-        btnEditar.textContent = "Editar Perfil";
-        btnEditar.style.backgroundColor = "#b22222";
-        alert("Cambios guardados correctamente ✅");
-      }
+    inputs.forEach((input) => {
+      input.disabled = !modoEdicion;
     });
-  }
+
+    if (modoEdicion) {
+      btnEditar.textContent = "Guardar Cambios";
+      btnEditar.style.backgroundColor = "#004aad";
+    } else {
+      btnEditar.textContent = "Editar Perfil";
+      btnEditar.style.backgroundColor = "#b22222";
+      alert("Cambios guardados correctamente ✅");
+    }
+  });
 });
-// ==================== GESTIÓN DE USUARIOS ====================
-document.addEventListener("DOMContentLoaded", function() {
+
+// ========= GESTIÓN USUARIOS (solo si existe #tablaUsuarios tbody) =========
+onReady(() => {
   const tabla = document.querySelector("#tablaUsuarios tbody");
-  if (!tabla) return; // Solo se ejecuta en gestion_usuarios.html
+  if (!tabla) return;
 
   const usuarios = [
     { id: 1, nombre: "Jose Pérez", correo: "joseperez@mail.com", rol: "Ciudadano" },
@@ -149,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function renderUsuarios() {
     tabla.innerHTML = "";
-    usuarios.forEach(user => {
+    usuarios.forEach((user) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
         <td style="padding:10px; border-bottom:1px solid #eee;">${user.id}</td>
@@ -163,14 +169,13 @@ document.addEventListener("DOMContentLoaded", function() {
       `;
       tabla.appendChild(fila);
     });
-    asignarEventos();
-  }
 
-  function asignarEventos() {
-    document.querySelectorAll(".btn-editar").forEach(btn => {
-      btn.addEventListener("click", e => {
+    document.querySelectorAll(".btn-editar").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
         const id = e.target.dataset.id;
-        const user = usuarios.find(u => u.id == id);
+        const user = usuarios.find((u) => String(u.id) === String(id));
+        if (!user) return;
+
         const nuevoNombre = prompt("Editar nombre:", user.nombre);
         const nuevoRol = prompt("Editar rol:", user.rol);
         if (nuevoNombre && nuevoRol) {
@@ -182,11 +187,13 @@ document.addEventListener("DOMContentLoaded", function() {
       });
     });
 
-    document.querySelectorAll(".btn-eliminar").forEach(btn => {
-      btn.addEventListener("click", e => {
+    document.querySelectorAll(".btn-eliminar").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
         const id = e.target.dataset.id;
+        const index = usuarios.findIndex((u) => String(u.id) === String(id));
+        if (index === -1) return;
+
         if (confirm("¿Seguro que deseas eliminar este usuario?")) {
-          const index = usuarios.findIndex(u => u.id == id);
           usuarios.splice(index, 1);
           alert("🗑️ Usuario eliminado.");
           renderUsuarios();
