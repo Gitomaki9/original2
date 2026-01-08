@@ -12,7 +12,6 @@
   <!-- ======= HEADER ======= -->
   <header class="navbar">
     <div class="navbar__left">
-      
       <img src="../assents/images/CuscoReporta.png" alt="Logo Cusco Reporta" class="navbar__logo">
     </div>
 
@@ -30,8 +29,8 @@
     <section class="denuncia">
       <h1>REGISTRAR DENUNCIA</h1>
       <p>
-        Puede registrar su denuncia de dos maneras: de forma anónima, la cual seria un <br>
-        reporte de algún incidente o identificándose, la cual seria formalmente. <br>
+        Puede registrar su denuncia de dos maneras: de forma anónima, la cual sería un <br>
+        reporte de algún incidente o identificándose, la cual sería formalmente. <br>
         Complete los datos solicitados según la opción que elija.
       </p>
 
@@ -41,7 +40,11 @@
           <div class="icono red">
             <img src="../assents/anonimo.svg" alt="Anónimo">
           </div>
-          <a href="ReportarIncidencia.html" class="boton red">Reportar</a>
+
+          <!-- ✅ Cambiado a botón para controlar el flujo -->
+          <button id="btnReportarIncognito" type="button" class="boton red">
+            Reportar
+          </button>
         </div>
 
         <div class="opcion">
@@ -49,7 +52,11 @@
           <div class="icono blue">
             <img src="../assents/identificado.svg" alt="Identificado">
           </div>
-          <a href="iniciar-sesion.html" class="boton blue">Denunciar</a>
+
+          <!-- ✅ Cambiado a botón para controlar el flujo -->
+          <button id="btnDenunciarLogin" type="button" class="boton blue">
+            Denunciar
+          </button>
         </div>
       </div>
 
@@ -58,7 +65,6 @@
         <h2>¿Qué puedes reportar?</h2>
 
         <div class="features__grid">
-
           <div class="feature feature--red">
             <img src="../assents/icons/parking.svg" alt="">
             <h3>Mal estacionamiento</h3>
@@ -82,7 +88,6 @@
             <h3>Exceso de velocidad</h3>
             <p>Identifiquemos juntos a conductores imprudentes.</p>
           </div>
-
         </div>
       </section>
 
@@ -90,7 +95,47 @@
     </section>
   </main>
 
-  <script src="../js/main.js"></script>
+  <!-- ✅ Script propio para evitar conflictos -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnReportar = document.getElementById("btnReportarIncognito");
+      const btnDenunciar = document.getElementById("btnDenunciarLogin");
+
+      if (btnReportar) {
+        btnReportar.addEventListener("click", () => {
+          // Modo incógnito (anónimo)
+          localStorage.setItem("modo_denuncia", "incognito");
+
+          // (Opcional) si quieres que sea 100% anónimo incluso si había sesión:
+          // localStorage.removeItem("token");
+          // localStorage.removeItem("user");
+
+          // ✅ Aquí mandas a la pantalla UNIFICADA que me pediste
+          window.location.href = "reportar_denuncia.html";
+        });
+      }
+
+      if (btnDenunciar) {
+        btnDenunciar.addEventListener("click", () => {
+          // Modo identificado
+          localStorage.setItem("modo_denuncia", "identificado");
+          window.location.href = "iniciar-sesion.html";
+        });
+      }
+    });
+  </script>
+
+  <!-- main.js puede fallar en otras páginas si busca elementos que aquí no existen.
+       Si tu main.js está arreglado con if(element) no pasa nada.
+       Si aún falla, déjalo pero protegido así: -->
+  <script>
+    try {
+      const s = document.createElement("script");
+      s.src = "../js/main.js";
+      document.body.appendChild(s);
+    } catch (e) {
+      console.warn("main.js no pudo cargarse:", e);
+    }
+  </script>
 </body>
 </html>
-

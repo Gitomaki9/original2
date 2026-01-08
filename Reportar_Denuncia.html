@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reportar / Denunciar - Cusco Reporta</title>
+
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Leaflet (Mapa) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    .card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .grid-1{display:grid;grid-template-columns:1fr;gap:14px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-weight:800;font-size:.9rem}
+    .badge-ok{background:#e8f7ea;color:#1c6b2a}
+    .badge-warn{background:#fff3cd;color:#856404}
+    .badge-info{background:#e7f1ff;color:#0b3d91}
+    label{display:block;font-weight:800;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px}
+    textarea{min-height:110px;resize:vertical}
+    .btn{border:none;border-radius:10px;padding:12px 14px;font-weight:900;cursor:pointer}
+    .btn-primary{background:#8b0000;color:#fff}
+    .btn-outline{background:#fff;border:1px solid #ccc}
+    .muted{color:#666}
+    .error{color:#b00020;font-weight:800}
+    .ok{color:#1c6b2a;font-weight:800}
+    .map-wrap{border:1px solid #e5e5e5;border-radius:12px;overflow:hidden}
+    #map{width:100%;height:320px}
+    .hint{font-size:.9rem;color:#555;margin-top:6px}
+    .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .pill{padding:6px 10px;border-radius:999px;background:#f4f4f4;font-weight:800;font-size:.85rem;color:#444}
+    .section-title{margin: 16px 0 10px; font-weight: 900; color:#333;}
+    .hr{margin:18px 0; border:none; border-top:1px solid #eee;}
+    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar__logo">
+      <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
+    </div>
+    <nav class="topbar__menu">
+      <a href="index.html">Inicio</a>
+      <a href="sobre_nosotros.html">Sobre nosotros</a>
+      <a href="ayuda.html">Ayuda</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" style="display:flex;flex-direction:column;justify-content:flex-start;">
+      <div class="sidebar__user" style="margin-bottom:10px;">
+        <div class="sidebar__avatar"><i class="fa-solid fa-user"></i></div>
+        <div class="sidebar__info">
+          <h3 id="nombreUsuario">Invitado</h3>
+          <p id="rolUsuario">—</p>
+        </div>
+      </div>
+
+      <ul class="sidebar__menu" style="margin-top:0;padding-top:0;list-style:none;">
+        <li>
+          <a href="reportar_denuncia.html" class="active">
+            <i class="fa-solid fa-triangle-exclamation" style="width:20px;"></i>
+            <span style="margin-left:8px;">Reportar / Denunciar</span>
+          </a>
+        </li>
+        <li>
+          <a href="lista_incidencias.html">
+            <i class="fa-solid fa-list-check" style="width:20px;"></i>
+            <span style="margin-left:8px;">Estado de reportes</span>
+          </a>
+        </li>
+        <li>
+          <a href="MapaIncidiencias(Ciudadano).html">
+            <i class="fa-solid fa-map-location-dot" style="width:20px;"></i>
+            <span style="margin-left:8px;">Mapa de incidencias</span>
+          </a>
+        </li>
+        <li>
+          <a href="notificaciones.html">
+            <i class="fa-solid fa-bell" style="width:20px;"></i>
+            <span style="margin-left:8px;">Notificaciones</span>
+          </a>
+        </li>
+      </ul>
+
+      <button class="logout-btn" id="logoutBtn" style="margin-top:auto;">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+      </button>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="main-content">
+      <div class="row" style="justify-content:space-between;align-items:center;">
+        <div>
+          <h1>Reportar / Denunciar</h1>
+          <p class="muted">Registra una incidencia con sesión o en modo incógnito.</p>
+          <div class="inline" style="margin-top:8px;">
+            <span class="pill" id="pillModo">Modo: —</span>
+            <span class="pill" id="pillUser">Usuario: —</span>
+          </div>
+        </div>
+
+        <div id="modoBox" class="badge badge-warn">
+          <i class="fa-solid fa-user-secret"></i>
+          <span>Sesión anónima</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <form id="formInc">
+          <div class="grid">
+            <div>
+              <label for="fecha_incidente">Fecha</label>
+              <input type="date" id="fecha_incidente" required>
+            </div>
+
+            <div>
+              <label for="placa">Placa (opcional)</label>
+              <input id="placa" placeholder="Ej: X1A-123">
+              <small class="muted">Se guardará para permitir consulta por placa.</small>
+            </div>
+
+            <div>
+              <label for="categoria_id">Categoría</label>
+              <select id="categoria_id" required>
+                <option value="">Cargando categorías...</option>
+              </select>
+              <small class="muted">Se carga desde tu BD (tabla categorías).</small>
+            </div>
+
+            <div>
+              <label for="referencia_lugar">Referencia del lugar</label>
+              <input id="referencia_lugar" placeholder="Ej: Cerca al paradero principal" required>
+            </div>
+          </div>
+
+          <div class="grid" style="margin-top:12px;">
+            <div>
+              <label for="titulo">Título</label>
+              <input id="titulo" placeholder="Ej: Bache en la vía / Conductor ebrio" required>
+            </div>
+            <div>
+              <label for="distrito">Distrito</label>
+              <input id="distrito" placeholder="Ej: Wanchaq" required>
+            </div>
+          </div>
+
+          <div class="grid" style="margin-top:12px;">
+            <div>
+              <label for="departamento">Departamento</label>
+              <input id="departamento" value="Cusco">
+            </div>
+            <div>
+              <label for="provincia">Provincia</label>
+              <input id="provincia" value="Cusco">
+            </div>
+          </div>
+
+          <!-- MAPA -->
+          <div class="grid-1" style="margin-top:12px;">
+            <div>
+              <label>Ubicación en el mapa</label>
+              <div class="map-wrap">
+                <div id="map"></div>
+              </div>
+              <div class="hint">
+                Haz <b>click</b> en el mapa para marcar el punto o <b>arrastra</b> el marcador.
+                <span class="muted">(Se guardará lat/lng automáticamente)</span>
+              </div>
+
+              <input type="hidden" id="lat">
+              <input type="hidden" id="lng">
+            </div>
+          </div>
+
+          <div class="grid-1" style="margin-top:12px;">
+            <div>
+              <label for="descripcion">Descripción</label>
+              <textarea id="descripcion" placeholder="Describe lo sucedido..." required></textarea>
+            </div>
+
+            <div>
+              <label for="archivo">Evidencia (imagen opcional)</label>
+              <input type="file" id="archivo" accept="image/*">
+              <small class="muted">Se enviará como evidencia y se asociará a la incidencia.</small>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:14px;justify-content:flex-end;">
+            <button type="button" class="btn btn-outline" id="btnLimpiar">Limpiar</button>
+            <button type="submit" class="btn btn-primary" id="btnEnviar">
+              <i class="fa-solid fa-paper-plane"></i> Reportar
+            </button>
+          </div>
+
+          <div style="margin-top:10px;">
+            <p id="msg" class="muted"></p>
+          </div>
+        </form>
+
+        <hr class="hr">
+
+        <!-- CONSULTA POR PLACA -->
+        <div>
+          <div class="section-title">Consultar por placa</div>
+          <div class="row" style="align-items:center;">
+            <div style="flex:1; min-width:220px;">
+              <input id="placaConsulta" placeholder="Ej: X1A-123">
+            </div>
+            <button type="button" class="btn btn-outline" id="btnConsultarPlaca">
+              <i class="fa-solid fa-magnifying-glass"></i> Consultar
+            </button>
+          </div>
+
+          <div id="resultadoPlaca" class="muted" style="margin-top:10px;"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ================== CONFIG ==================
+    const API_BASE = "http://localhost:3000";
+
+    // ================== HELPERS ==================
+    const $ = (id) => document.getElementById(id);
+
+    function hoyISO() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function normalizePlaca(p) {
+      return String(p || "")
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "")
+        .replace(/[^A-Z0-9-]/g, "");
+    }
+
+    function setMsg(text, kind = "muted") {
+      const el = $("msg");
+      if (!el) return;
+      el.className = kind;
+      el.textContent = text || "";
+    }
+
+    async function safeJson(res) {
+      const ct = res.headers.get("content-type") || "";
+      if (ct.includes("application/json")) return res.json();
+      const txt = await res.text();
+      return { ok: false, message: txt || "Respuesta no JSON" };
+    }
+
+    function getUserFromStorage() {
+      try {
+        const raw = localStorage.getItem("user");
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function getModo() {
+      const modo = localStorage.getItem("modo_denuncia"); // incognito | identificado
+      const token = localStorage.getItem("token");
+      const user = getUserFromStorage();
+
+      if (modo === "incognito") return { modo: "incognito", token: null, user: null };
+      if (token) return { modo: "identificado", token, user };
+      return { modo: "incognito", token: null, user: null };
+    }
+
+    function pintarModo() {
+      const { modo, user } = getModo();
+
+      const nombreEl = $("nombreUsuario");
+      const rolEl = $("rolUsuario");
+      const box = $("modoBox");
+      const pillModo = $("pillModo");
+      const pillUser = $("pillUser");
+
+      if (modo === "identificado") {
+        box.className = "badge badge-ok";
+        box.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>Sesión identificada</span>`;
+        pillModo.textContent = "Modo: Identificado";
+
+        const name = user?.nombre_completo || user?.username || "Usuario";
+        pillUser.textContent = `Usuario: ${name}`;
+
+        nombreEl.textContent = name;
+        rolEl.textContent = (user?.rol_id === 2) ? "Administrador" : "Ciudadano";
+      } else {
+        box.className = "badge badge-warn";
+        box.innerHTML = `<i class="fa-solid fa-user-secret"></i><span>Sesión anónima</span>`;
+        pillModo.textContent = "Modo: Anónimo";
+        pillUser.textContent = "Usuario: Invitado";
+
+        nombreEl.textContent = "Invitado";
+        rolEl.textContent = "—";
+      }
+    }
+
+    // ================== MAPA ==================
+    let map, marker;
+
+    function setLatLng(lat, lng) {
+      $("lat").value = String(lat);
+      $("lng").value = String(lng);
+    }
+
+    function initMap() {
+      const defaultLat = -13.53195;
+      const defaultLng = -71.96746;
+
+      map = L.map("map").setView([defaultLat, defaultLng], 14);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "© OpenStreetMap"
+      }).addTo(map);
+
+      marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+      setLatLng(defaultLat, defaultLng);
+
+      map.on("click", (e) => {
+        const { lat, lng } = e.latlng;
+        marker.setLatLng([lat, lng]);
+        setLatLng(lat, lng);
+      });
+
+      marker.on("dragend", () => {
+        const p = marker.getLatLng();
+        setLatLng(p.lat, p.lng);
+      });
+    }
+
+    // ================== CATEGORÍAS (DESDE BD) ==================
+    function normalizarCategorias(payload) {
+      // soporta: {ok:true, categorias:[...]}  o array directo
+      if (Array.isArray(payload)) return payload;
+      if (payload && Array.isArray(payload.categorias)) return payload.categorias;
+      if (payload && Array.isArray(payload.data)) return payload.data;
+      if (payload && Array.isArray(payload.rows)) return payload.rows;
+      return [];
+    }
+
+    async function cargarCategorias() {
+      const sel = $("categoria_id");
+      sel.innerHTML = `<option value="">Cargando categorías...</option>`;
+
+      try {
+        // tu endpoint backend: /categorias_incidencia
+        const res = await fetch(`${API_BASE}/categorias_incidencia`);
+        const data = await safeJson(res);
+
+        const cats = normalizarCategorias(data);
+
+        if (!res.ok || !cats.length) {
+          sel.innerHTML = `<option value="">No se pudieron cargar categorías</option>`;
+          return;
+        }
+
+        sel.innerHTML = `<option value="">Seleccione una categoría</option>`;
+
+        cats.forEach((c) => {
+          const id = c.id ?? c.categoria_id ?? c.categorias_incidencia_id;
+          const nombre = c.nombre ?? c.categoria ?? c.descripcion ?? c.titulo;
+          if (id == null || !nombre) return;
+
+          const opt = document.createElement("option");
+          opt.value = String(id);
+          opt.textContent = String(nombre);
+          sel.appendChild(opt);
+        });
+
+        if (sel.options.length <= 1) {
+          sel.innerHTML = `<option value="">No se pudieron interpretar categorías</option>`;
+        }
+      } catch (e) {
+        console.error(e);
+        sel.innerHTML = `<option value="">No se pudieron cargar categorías</option>`;
+      }
+    }
+
+    // ================== REGISTRAR INCIDENCIA ==================
+    async function registrarIncidencia(e) {
+      e.preventDefault();
+      setMsg("Registrando reporte...", "muted");
+
+      const fecha = $("fecha_incidente");
+      const categoria = $("categoria_id");
+      const placa = $("placa");
+      const titulo = $("titulo");
+      const referencia = $("referencia_lugar");
+      const distrito = $("distrito");
+      const departamento = $("departamento");
+      const provincia = $("provincia");
+      const descripcion = $("descripcion");
+      const lat = $("lat");
+      const lng = $("lng");
+      const archivo = $("archivo");
+
+      if (!fecha.value || !categoria.value || !titulo.value.trim() || !referencia.value.trim() || !distrito.value.trim() || !descripcion.value.trim()) {
+        setMsg("Completa los campos obligatorios.", "error");
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append("fecha_incidente", fecha.value);
+      fd.append("categoria_id", categoria.value);
+
+      const placaNorm = normalizePlaca(placa.value);
+      if (placaNorm) fd.append("placa", placaNorm);
+
+      fd.append("titulo", titulo.value.trim());
+      fd.append("referencia_lugar", referencia.value.trim());
+      fd.append("distrito", distrito.value.trim());
+      fd.append("departamento", (departamento.value || "Cusco").trim());
+      fd.append("provincia", (provincia.value || "Cusco").trim());
+      fd.append("descripcion", descripcion.value.trim());
+
+      if (lat.value) fd.append("lat", lat.value);
+      if (lng.value) fd.append("lng", lng.value);
+
+      const { modo, token, user } = getModo();
+      fd.append("modo", modo);
+      // si tu backend acepta usuario_id (recomendado)
+      fd.append("usuario_id", user?.id ? String(user.id) : "");
+
+      if (archivo.files && archivo.files[0]) {
+        fd.append("archivo", archivo.files[0]); // multer.single("archivo")
+      }
+
+      const headers = {};
+      if (token && modo === "identificado") headers["Authorization"] = `Bearer ${token}`;
+
+      try {
+        // ✅ tu backend actual: POST /incidencias
+        const res = await fetch(`${API_BASE}/incidencias`, {
+          method: "POST",
+          headers,
+          body: fd
+        });
+
+        const data = await safeJson(res);
+
+        if (!res.ok || !data.ok) {
+          setMsg(data.message || `Error HTTP ${res.status}`, "error");
+          return;
+        }
+
+        setMsg(`✅ Reporte registrado correctamente (ID: ${data.id ?? "OK"}).`, "ok");
+
+        // autollenar consulta con la placa si ingresó
+        if (placaNorm) $("placaConsulta").value = placaNorm;
+
+        // reset
+        $("formInc").reset();
+        $("fecha_incidente").value = hoyISO();
+      } catch (err) {
+        console.error(err);
+        setMsg("❌ Error de conexión con el servidor (backend).", "error");
+      }
+    }
+
+    function limpiarFormulario() {
+      $("fecha_incidente").value = hoyISO();
+      $("placa").value = "";
+      $("categoria_id").value = "";
+      $("referencia_lugar").value = "";
+      $("titulo").value = "";
+      $("departamento").value = "Cusco";
+      $("provincia").value = "Cusco";
+      $("distrito").value = "";
+      $("descripcion").value = "";
+      $("archivo").value = "";
+      setMsg("", "muted");
+    }
+
+    // ================== CONSULTA POR PLACA ==================
+    async function consultarPlaca() {
+      const placa = normalizePlaca($("placaConsulta").value);
+      const out = $("resultadoPlaca");
+
+      if (!placa) {
+        out.textContent = "⚠️ Ingresa una placa válida.";
+        out.className = "error";
+        return;
+      }
+
+      out.textContent = "Consultando...";
+      out.className = "muted";
+
+      try {
+        // ✅ tu backend actual: GET /incidencias/placa?placa=XXXX
+        const res = await fetch(`${API_BASE}/incidencias/placa?placa=${encodeURIComponent(placa)}`);
+        const data = await safeJson(res);
+
+        if (!res.ok || !data.ok) {
+          out.textContent = data.message || `Error HTTP ${res.status}`;
+          out.className = "error";
+          return;
+        }
+
+        if (data.reportado) {
+          out.innerHTML = `🚨 <b>PLACA REPORTADA</b><br>Registros: ${data.total ?? 0}`;
+          out.className = "error";
+        } else {
+          out.textContent = `✅ Placa ${placa} NO tiene reportes.`;
+          out.className = "ok";
+        }
+      } catch (err) {
+        console.error(err);
+        out.textContent = "❌ Error de conexión con el servidor.";
+        out.className = "error";
+      }
+    }
+
+    // ================== INIT ==================
+    document.addEventListener("DOMContentLoaded", async () => {
+      pintarModo();
+
+      $("fecha_incidente").value = hoyISO();
+
+      // Leaflet cargado con defer: ya debe existir
+      initMap();
+
+      // cargar categorías desde tu BD
+      await cargarCategorias();
+
+      $("btnLimpiar").addEventListener("click", limpiarFormulario);
+      $("formInc").addEventListener("submit", registrarIncidencia);
+
+      $("btnConsultarPlaca").addEventListener("click", consultarPlaca);
+
+      $("logoutBtn").addEventListener("click", () => {
+        if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          localStorage.setItem("modo_denuncia", "incognito");
+          window.location.href = "index.html";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
