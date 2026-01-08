@@ -809,6 +809,103 @@ input:focus {
   font-size: 16px;
   color: #555;
 }
+/* Agrega esto al final de tu archivo styles.css */
+
+/* ===== CORRECCIONES PARA MODO CLARO ===== */
+
+/* Asegurar que el texto sea visible en modo claro */
+body {
+  color: #333 !important; /* Color oscuro para texto principal */
+  background-color: #f8f9fa !important; /* Fondo claro */
+}
+
+/* Navbar - texto visible */
+.navbar__menu a {
+  color: #333 !important; /* Texto oscuro en enlaces */
+  font-weight: 600;
+}
+
+.navbar__menu a:hover {
+  color: #8b0000 !important; /* Rojo al hover */
+}
+
+/* Hero section - texto visible */
+.hero--red .hero__text h1,
+.hero--red .hero__text p {
+  color: white !important; /* Mantener blanco en fondo rojo */
+}
+
+/* Features section */
+.features h2 {
+  color: #333 !important; /* Título oscuro */
+}
+
+.feature h3 {
+  color: #333 !important; /* Subtítulo oscuro */
+}
+
+.feature p {
+  color: #555 !important; /* Texto gris oscuro */
+}
+
+/* Modal y formularios - texto visible */
+.modal-content,
+.formulario,
+.campo label {
+  color: #333 !important; /* Texto oscuro en formularios */
+}
+
+.modal-content input,
+.formulario input,
+.formulario select,
+.formulario textarea {
+  color: #333 !important; /* Texto oscuro en inputs */
+  background-color: white !important;
+  border: 1px solid #ddd !important;
+}
+
+/* Mensajes - mantener contraste */
+.mensaje-flotante {
+  color: white !important; /* Mensajes con texto blanco */
+}
+
+/* Sidebar - texto visible */
+.sidebar {
+  background-color: white !important;
+  color: #333 !important;
+}
+
+.sidebar__info h3 {
+  color: #333 !important;
+}
+
+.sidebar__info p {
+  color: #666 !important;
+}
+
+.sidebar__menu a {
+  color: #555 !important;
+}
+
+.sidebar__menu a:hover {
+  color: #8b0000 !important;
+}
+
+/* Botones - mantener visibilidad */
+.btn-principal,
+.btn-secundario {
+  color: white !important; /* Texto blanco en botones */
+}
+
+.btn-secundario {
+  background-color: #f8f9fa !important;
+  color: #333 !important;
+  border: 2px solid #ddd !important;
+}
+
+.btn-secundario:hover {
+  color: #8b0000 !important;
+}
 
 /* Animación suave */
 @keyframes fadeIn {
