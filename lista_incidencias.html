@@ -1,535 +1,444 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estado de Reportes - Cusco Reporta</title>
-  <link rel="stylesheet" href="../css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  
-  <style>
-    /* Estilos específicos para lista de incidencias */
-    .reports-container {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,.1);
-      padding: 0;
-      margin-top: 20px;
-      overflow: hidden;
+// lista_incidencias.js - VERSIÓN COMPLETA Y FUNCIONAL
+(function() {
+    'use strict';
+    
+    // Función helper para seleccionar elementos
+    function $(id) {
+        return document.getElementById(id);
     }
     
-    .reports-header {
-      padding: 25px;
-      border-bottom: 1px solid #e0e0e0;
-      background: #f8f9fa;
+    // Función para mostrar estado
+    function setEstadoCarga(texto, tipo = 'info') {
+        const elemento = $('estadoCarga');
+        if (!elemento) return;
+        
+        elemento.textContent = texto;
+        elemento.className = 'meta-pill';
+        
+        if (tipo === 'error') {
+            elemento.classList.add('error');
+            elemento.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${texto}`;
+        } else if (tipo === 'success') {
+            elemento.classList.add('ok');
+            elemento.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${texto}`;
+        } else {
+            elemento.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${texto}`;
+        }
     }
     
-    .reports-header h2 {
-      color: var(--primary-color);
-      margin-bottom: 20px;
-      font-size: 1.5rem;
+    // Función para formatear fecha
+    function formatFecha(fechaISO) {
+        if (!fechaISO) return '—';
+        try {
+            const fecha = new Date(fechaISO);
+            if (isNaN(fecha.getTime())) return 'Fecha inválida';
+            return fecha.toLocaleDateString('es-PE', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch {
+            return '—';
+        }
     }
     
-    /* CONTENEDOR PRINCIPAL DE FILTROS - CORREGIDO */
-    .date-filters {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-      align-items: flex-end; /* Esto alinea todo al fondo */
+    // Función para badge de estado
+    function getBadgeEstado(estado) {
+        const estadoLower = String(estado || '').toLowerCase();
+        
+        if (estadoLower.includes('pendiente') || estadoLower.includes('reporte')) {
+            return `<span class="status-badge status-reporte">Reportado</span>`;
+        }
+        if (estadoLower.includes('proceso')) {
+            return `<span class="status-badge status-proceso">En Proceso</span>`;
+        }
+        if (estadoLower.includes('solucionado')) {
+            return `<span class="status-badge status-solucionado">Solucionado</span>`;
+        }
+        if (estadoLower.includes('cancelado')) {
+            return `<span class="status-badge status-cancelado">Cancelado</span>`;
+        }
+        return `<span class="status-badge status-reporte">${estado || 'Pendiente'}</span>`;
     }
     
-    /* GRUPO DE FILTROS ALINEADOS */
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      min-width: 180px;
-      flex: 1;
-    }
+    // Inicialización cuando se carga la página
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('🚀 Iniciando aplicación de incidencias');
+        
+        // Obtener cliente Supabase
+        const supabase = window.supabaseClient || window.supabase;
+        
+        if (!supabase) {
+            setEstadoCarga('Error: Supabase no configurado', 'error');
+            console.error('❌ Supabase no está disponible en window');
+            return;
+        }
+        
+        console.log('✅ Cliente Supabase disponible:', supabase);
+        
+        // Variables globales
+        let usuarioActual = null;
+        let esAdmin = false;
+        let incidencias = [];
+        
+        // 1. Verificar sesión y permisos
+        async function verificarSesionYPermisos() {
+            try {
+                console.log('🔐 Verificando sesión...');
+                
+                // NOTA: Usar supabase.auth.getSession() correctamente
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.warn('Error obteniendo sesión:', error.message);
+                    return { loggedIn: false, esAdmin: false, nombre: null };
+                }
+                
+                if (session?.user) {
+                    usuarioActual = session.user;
+                    console.log('👤 Usuario identificado:', usuarioActual.email);
+                    
+                    // Intentar obtener datos adicionales del usuario
+                    try {
+                        const { data: usuario, error: userError } = await supabase
+                            .from('usuarios')
+                            .select('nombre_completo, tipo_usuario')
+                            .eq('id', usuarioActual.id)
+                            .single();
+                        
+                        if (!userError && usuario) {
+                            esAdmin = usuario.tipo_usuario === 'admin';
+                            return { 
+                                loggedIn: true, 
+                                esAdmin, 
+                                nombre: usuario.nombre_completo || usuarioActual.email 
+                            };
+                        }
+                    } catch (dbError) {
+                        console.warn('No se pudo obtener datos de usuario:', dbError.message);
+                    }
+                    
+                    return { 
+                        loggedIn: true, 
+                        esAdmin: false, 
+                        nombre: usuarioActual.email 
+                    };
+                }
+                
+                return { loggedIn: false, esAdmin: false, nombre: null };
+                
+            } catch (error) {
+                console.error('❌ Error en verificarSesionYPermisos:', error);
+                return { loggedIn: false, esAdmin: false, nombre: null };
+            }
+        }
+        
+        // 2. Cargar incidencias
+        async function cargarIncidencias() {
+            try {
+                setEstadoCarga('Cargando incidencias...');
+                
+                // Construir consulta base
+                let query = supabase
+                    .from('denuncias')
+                    .select('*')
+                    .order('creado_en', { ascending: false });
+                
+                // Aplicar filtros
+                const fechaInicio = $('fecha-inicio')?.value;
+                const fechaFin = $('fecha-fin')?.value;
+                const estado = $('estado')?.value;
+                
+                if (fechaInicio) {
+                    query = query.gte('fecha_incidente', fechaInicio);
+                }
+                
+                if (fechaFin) {
+                    query = query.lte('fecha_incidente', fechaFin);
+                }
+                
+                if (estado && estado !== 'todos') {
+                    let estadoBD = estado;
+                    if (estado === 'reporte') estadoBD = 'pendiente';
+                    if (estado === 'proceso') estadoBD = 'en_proceso';
+                    query = query.eq('estado', estadoBD);
+                }
+                
+                // Aplicar filtros de usuario
+                if (usuarioActual && !esAdmin) {
+                    query = query.or(`user_id.eq.${usuarioActual.id},es_anonimo.eq.true`);
+                } else if (!usuarioActual) {
+                    query = query.eq('es_anonimo', true);
+                }
+                
+                // Ejecutar consulta
+                console.log('📊 Ejecutando consulta...');
+                const { data, error } = await query;
+                
+                if (error) {
+                    console.error('Error en consulta:', error);
+                    throw new Error(`Error de base de datos: ${error.message}`);
+                }
+                
+                incidencias = data || [];
+                mostrarIncidencias(incidencias);
+                
+                const totalElement = $('totalInc');
+                if (totalElement) {
+                    totalElement.textContent = incidencias.length;
+                }
+                
+                setEstadoCarga(`Cargadas ${incidencias.length} incidencias`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error cargando incidencias:', error);
+                setEstadoCarga(`Error: ${error.message}`, 'error');
+                mostrarIncidencias([]);
+            }
+        }
+        
+        // 3. Mostrar incidencias en tabla
+        function mostrarIncidencias(data) {
+            const tbody = $('tbodyInc');
+            if (!tbody) return;
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
+                            <i class="fa-solid fa-inbox"></i><br>
+                            No se encontraron incidencias
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            const filasHTML = data.map(inc => {
+                return `
+                    <tr>
+                        <td><strong>#${inc.id}</strong></td>
+                        <td>${formatFecha(inc.fecha_incidente)}</td>
+                        <td>${inc.tipo_formulario === 'reporte' ? 'Reporte' : 'Denuncia'}</td>
+                        <td>${inc.categoria || '—'}</td>
+                        <td>${inc.titulo || '—'}</td>
+                        <td>${inc.distrito || inc.ubicacion || '—'}</td>
+                        <td>${getBadgeEstado(inc.estado)}</td>
+                        <td>
+                            <button class="link-btn btn-detalle" data-id="${inc.id}">
+                                <i class="fa-solid fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            tbody.innerHTML = filasHTML;
+            
+            // Agregar eventos a botones de detalle
+            tbody.querySelectorAll('.btn-detalle').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    const incidencia = data.find(i => i.id == id);
+                    if (incidencia) {
+                        mostrarDetalleModal(incidencia);
+                    }
+                });
+            });
+        }
+        
+        // 4. Mostrar detalle en modal
+        function mostrarDetalleModal(inc) {
+            const modal = $('modalDetalle');
+            const title = $('modalTitle');
+            const body = $('modalBody');
+            
+            if (!modal || !title || !body) return;
+            
+            title.textContent = `Detalle: ${inc.titulo || 'Incidencia'}`;
+            
+            const fechaIncidente = formatFecha(inc.fecha_incidente);
+            const fechaCreacion = new Date(inc.creado_en).toLocaleString('es-PE');
+            
+            let contenido = `
+                <div style="display: grid; gap: 15px;">
+                    <div>
+                        <h4 style="color: #8b0000; margin-bottom: 10px;">Información Básica</h4>
+                        <p><strong>ID:</strong> ${inc.id}</p>
+                        <p><strong>Tipo:</strong> ${inc.tipo_formulario === 'reporte' ? 'Reporte' : 'Denuncia'}</p>
+                        <p><strong>Estado:</strong> ${getBadgeEstado(inc.estado)}</p>
+                        <p><strong>Fecha Incidente:</strong> ${fechaIncidente}</p>
+                        <p><strong>Fecha Reporte:</strong> ${fechaCreacion}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #8b0000; margin-bottom: 10px;">Descripción</h4>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                            <p style="margin: 0; white-space: pre-wrap;">${inc.descripcion || 'Sin descripción'}</p>
+                        </div>
+                    </div>
+            `;
+            
+            if (inc.placa_vehiculo) {
+                contenido += `
+                    <div>
+                        <h4 style="color: #8b0000; margin-bottom: 10px;">Vehículo</h4>
+                        <p><strong>Placa:</strong> ${inc.placa_vehiculo}</p>
+                    </div>
+                `;
+            }
+            
+            if (esAdmin) {
+                contenido += `
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <h4 style="color: #8b0000; margin-bottom: 10px;">Información del Sistema</h4>
+                        <p><strong>Usuario ID:</strong> ${inc.user_id || 'Anónimo'}</p>
+                        <p><strong>Email:</strong> ${inc.usuario_email || 'No especificado'}</p>
+                    </div>
+                `;
+            }
+            
+            contenido += `</div>`;
+            body.innerHTML = contenido;
+            modal.style.display = 'flex';
+        }
+        
+        // 5. Configurar eventos
+        function configurarEventos() {
+            // Botón buscar
+            const btnBuscar = $('btnBuscar');
+            if (btnBuscar) {
+                btnBuscar.addEventListener('click', cargarIncidencias);
+            }
+            
+            // Botón buscar por término
+            const btnBuscarTermino = $('btnBuscarTermino');
+            if (btnBuscarTermino) {
+                btnBuscarTermino.addEventListener('click', async function() {
+                    const termino = $('busqueda')?.value?.trim();
+                    if (!termino) {
+                        return cargarIncidencias();
+                    }
+                    
+                    setEstadoCarga('Buscando...');
+                    
+                    try {
+                        let query = supabase
+                            .from('denuncias')
+                            .select('*')
+                            .or(`placa_vehiculo.ilike.%${termino}%,titulo.ilike.%${termino}%,id::text.ilike.%${termino}%`)
+                            .order('creado_en', { ascending: false });
+                        
+                        const { data, error } = await query;
+                        
+                        if (error) throw error;
+                        
+                        incidencias = data || [];
+                        mostrarIncidencias(incidencias);
+                        setEstadoCarga(`Encontradas ${incidencias.length} incidencias`, 'success');
+                        
+                    } catch (error) {
+                        console.error('Error en búsqueda:', error);
+                        setEstadoCarga('Error en búsqueda', 'error');
+                    }
+                });
+            }
+            
+            // Botón limpiar
+            const btnLimpiar = $('btnLimpiar');
+            if (btnLimpiar) {
+                btnLimpiar.addEventListener('click', function() {
+                    if ($('fecha-inicio')) $('fecha-inicio').value = '';
+                    if ($('fecha-fin')) $('fecha-fin').value = '';
+                    if ($('estado')) $('estado').value = 'todos';
+                    if ($('busqueda')) $('busqueda').value = '';
+                    setEstadoCarga('Filtros limpiados');
+                    cargarIncidencias();
+                });
+            }
+            
+            // Logout
+            const logoutBtn = $('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async function() {
+                    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                        try {
+                            await supabase.auth.signOut();
+                            window.location.href = 'index.html';
+                        } catch (error) {
+                            console.error('Error al cerrar sesión:', error);
+                            window.location.href = 'index.html';
+                        }
+                    }
+                });
+            }
+            
+            // Modal
+            const modalClose = $('modalClose');
+            if (modalClose) {
+                modalClose.addEventListener('click', function() {
+                    $('modalDetalle').style.display = 'none';
+                });
+            }
+            
+            const modal = $('modalDetalle');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Enter en búsqueda
+            const busquedaInput = $('busqueda');
+            if (busquedaInput) {
+                busquedaInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        $('btnBuscarTermino')?.click();
+                    }
+                });
+            }
+        }
+        
+        // 6. Actualizar UI con datos de sesión
+        async function actualizarUI() {
+            const sesion = await verificarSesionYPermisos();
+            
+            // Actualizar barra lateral
+            const nombreEl = $('nombreUsuario');
+            const rolEl = $('rolUsuario');
+            
+            if (sesion.loggedIn) {
+                if (nombreEl) nombreEl.textContent = sesion.nombre || 'Usuario';
+                if (rolEl) rolEl.textContent = sesion.esAdmin ? 'Administrador' : 'Ciudadano';
+                console.log(`👤 Mostrando como: ${sesion.nombre} (${sesion.esAdmin ? 'Admin' : 'Ciudadano'})`);
+            } else {
+                if (nombreEl) nombreEl.textContent = 'Invitado';
+                if (rolEl) rolEl.textContent = '—';
+                console.log('👤 Modo anónimo activado');
+            }
+        }
+        
+        // 7. Inicializar aplicación
+        async function iniciar() {
+            console.log('🔄 Inicializando aplicación...');
+            
+            // Actualizar UI
+            await actualizarUI();
+            
+            // Configurar eventos
+            configurarEventos();
+            
+            // Cargar incidencias iniciales
+            await cargarIncidencias();
+            
+            console.log('✅ Aplicación inicializada correctamente');
+        }
+        
+        // Iniciar todo
+        await iniciar();
+        
+    }); // Fin del DOMContentLoaded
     
-    .filter-group label {
-      font-size: .9rem;
-      margin-bottom: 5px;
-      color: #555;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    .filter-group input,
-    .filter-group select {
-      padding: 10px 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: .9rem;
-      background: white;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    
-    /* GRUPO ESPECIAL PARA BÚSQUEDA */
-    .search-group {
-      display: flex;
-      flex-direction: column;
-      min-width: 250px;
-      flex: 2;
-    }
-    
-    .search-input-container {
-      display: flex;
-      gap: 5px;
-      width: 100%;
-    }
-    
-    .search-input-container input {
-      flex: 1;
-      padding: 10px 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: .9rem;
-    }
-    
-    /* BOTONES ALINEADOS */
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end; /* Alinea botones al fondo */
-      height: 100%;
-      padding-bottom: 5px; /* Ajuste fino para alineación */
-    }
-    
-    .btn {
-      padding: 10px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      height: fit-content;
-      white-space: nowrap;
-    }
-    
-    .btn-primary {
-      background: #b22222;
-      color: white;
-    }
-    
-    .btn-primary:hover {
-      background: #8b0000;
-      transform: translateY(-1px);
-    }
-    
-    .btn-outline {
-      background: white;
-      border: 1px solid #ccc;
-      color: #333;
-    }
-    
-    .btn-outline:hover {
-      background: #f8f9fa;
-      border-color: #999;
-    }
-    
-    /* Botón pequeño para búsqueda */
-    .btn-search {
-      padding: 10px 12px;
-      height: 39px; /* Misma altura que inputs */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .reports-table h3 {
-      padding: 20px 25px 15px;
-      color: var(--primary-color);
-      margin: 0;
-      font-size: 1.1rem;
-      border-bottom: 1px solid #e0e0e0;
-      background: #f8f9fa;
-    }
-    
-    .meta-row {
-      padding: 10px 25px;
-      color: #666;
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      align-items: center;
-      background: #fafafa;
-      border-bottom: 1px solid #e0e0e0;
-    }
-    
-    .meta-pill {
-      background: #f3f3f3;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: .9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    
-    th, td {
-      padding: 14px 18px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-      vertical-align: top;
-    }
-    
-    th {
-      background: #fafafa;
-      font-weight: 700;
-      color: #444;
-      font-size: .9rem;
-      white-space: nowrap;
-    }
-    
-    tr:hover {
-      background: #fcfcfc;
-    }
-    
-    .status-badge {
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: .78rem;
-      font-weight: 800;
-      display: inline-block;
-      white-space: nowrap;
-    }
-    
-    .status-reporte {
-      background: #fff3cd;
-      color: #856404;
-    }
-    
-    .status-proceso {
-      background: #cce7ff;
-      color: #004085;
-    }
-    
-    .status-solucionado {
-      background: #d4edda;
-      color: #155724;
-    }
-    
-    .status-cancelado {
-      background: #f8d7da;
-      color: #721c24;
-    }
-    
-    .link-btn {
-      border: none;
-      background: #eee;
-      padding: 8px 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    
-    .link-btn:hover {
-      background: #ddd;
-      transform: translateY(-1px);
-    }
-    
-    /* Modal */
-    #modalDetalle {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.45);
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    
-    #modalCard {
-      background: #fff;
-      width: min(760px, 92vw);
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.2);
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-    
-    #modalHeader {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    #modalTitle {
-      margin: 0;
-      color: #8b0000;
-    }
-    
-    #modalBody {
-      color: #333;
-      line-height: 1.45;
-      margin-top: 10px;
-    }
-    
-    #modalClose {
-      border: none;
-      background: #eee;
-      padding: 8px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 800;
-    }
-    
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .date-filters {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-      }
-      
-      .filter-group, .search-group {
-        min-width: 100%;
-      }
-      
-      .toolbar {
-        width: 100%;
-        justify-content: flex-start;
-        margin-top: 10px;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .date-filters {
-        gap: 10px;
-      }
-      
-      .btn {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <!-- NAVBAR SUPERIOR -->
-  <header class="topbar">
-    <div class="topbar__logo">
-      <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
-    </div>
-    <nav class="topbar__menu">
-      <a href="index.html">Inicio</a>
-      <a href="sobre_nosotros.html">Sobre nosotros</a>
-      <a href="ayuda.html">Ayuda</a>
-    </nav>
-  </header>
-
-  <!-- CONTENEDOR PRINCIPAL -->
-  <div class="container">
-    <!-- SIDEBAR IZQUIERDO -->
-    <aside class="sidebar" style="display: flex; flex-direction: column; justify-content: flex-start;">
-      <div class="sidebar__user" style="margin-bottom: 10px;">
-        <div class="sidebar__avatar">
-          <i class="fa-solid fa-user" id="userAvatar"></i>
-        </div>
-        <div class="sidebar__info">
-          <h3 id="nombreUsuario">Cargando...</h3>
-          <p id="rolUsuario">Cargando...</p>
-        </div>
-      </div>
-
-      <!-- Menú del usuario -->
-      <ul class="sidebar__menu" style="margin-top: 0; padding-top: 0; list-style: none;">
-        <li style="display: flex; align-items: flex-start;">
-          <a href="perfil_usuario.html">
-            <i class="fa-solid fa-id-card" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Ver perfil</span>
-          </a>
-        </li>
-        <li style="display: flex; align-items: flex-start;">
-          <a href="ReportarIncidencia.html">
-            <i class="fa-solid fa-pen-to-square" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Reportar</span>
-          </a>
-        </li>
-        <li style="display: flex; align-items: flex-start;">
-          <a href="registrar_Denuncia.html">
-            <i class="fa-solid fa-triangle-exclamation" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Denunciar</span>
-          </a>
-        </li>
-        <li style="display: flex; align-items: flex-start;">
-          <a href="lista_incidencias.html" class="active">
-            <i class="fa-solid fa-list-check" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Estado de reportes</span>
-          </a>
-        </li>
-        <li style="display: flex; align-items: flex-start;">
-          <a href="MapaIncidiencias(Ciudadano).html">
-            <i class="fa-solid fa-map-location-dot" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Mapa de incidencias</span>
-          </a>
-        </li>
-        <li style="display: flex; align-items: flex-start;">
-          <a href="notificaciones.html">
-            <i class="fa-solid fa-bell" style="width: 20px;"></i>
-            <span style="margin-left:8px;">Notificaciones</span>
-          </a>
-        </li>
-      </ul>
-
-      <button class="logout-btn" id="logoutBtn" style="margin-top: auto;">
-        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-      </button>
-    </aside>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="main-content">
-      <section class="perfil-container">
-        <h1>Estado de Reportes</h1>
-        <p style="color: #666; margin-top: 5px;">
-          Consulta el estado de tus reportes y denuncias registradas.
-        </p>
-      </section>
-
-      <!-- Contenedor principal de reportes -->
-      <div class="reports-container">
-        <!-- Cabecera con filtros - REESTRUCTURADO -->
-        <div class="reports-header">
-          <h2>FILTRAR INCIDENCIAS</h2>
-          
-          <!-- FILTROS ALINEADOS -->
-          <div class="date-filters">
-            <!-- Filtro Desde -->
-            <div class="filter-group">
-              <label for="fecha-inicio">
-                <i class="fa-solid fa-calendar-day"></i> Desde
-              </label>
-              <input type="date" id="fecha-inicio">
-            </div>
-
-            <!-- Filtro Hasta -->
-            <div class="filter-group">
-              <label for="fecha-fin">
-                <i class="fa-solid fa-calendar-day"></i> Hasta
-              </label>
-              <input type="date" id="fecha-fin">
-            </div>
-
-            <!-- Filtro Estado -->
-            <div class="filter-group">
-              <label for="estado">
-                <i class="fa-solid fa-filter"></i> Estado
-              </label>
-              <select id="estado">
-                <option value="todos">Todos los estados</option>
-                <option value="reporte">Reportado</option>
-                <option value="proceso">En Proceso</option>
-                <option value="solucionado">Solucionado</option>
-                <option value="cancelado">Cancelado</option>
-              </select>
-            </div>
-
-            <!-- Búsqueda por texto -->
-            <div class="search-group">
-              <label for="busqueda">
-                <i class="fa-solid fa-search"></i> Buscar
-              </label>
-              <div class="search-input-container">
-                <input type="text" id="busqueda" placeholder="Placa, nombre, ID...">
-                <button id="btnBuscarTermino" class="btn btn-outline btn-search" type="button" title="Buscar">
-                  <i class="fa-solid fa-search"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Botones de acción -->
-            <div class="toolbar">
-              <button class="btn btn-primary" id="btnBuscar" type="button">
-                <i class="fa-solid fa-magnifying-glass"></i> Buscar
-              </button>
-              <button class="btn btn-outline" id="btnLimpiar" type="button">
-                <i class="fa-solid fa-broom"></i> Limpiar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tabla de reportes -->
-        <div class="reports-table">
-          <h3>REPORTES RECIBIDOS</h3>
-
-          <!-- Información de estado y conteo -->
-          <div class="meta-row">
-            <span class="meta-pill">
-              <i class="fa-solid fa-database"></i>
-              Total: <strong id="totalInc">0</strong>
-            </span>
-            <span class="meta-pill" id="estadoCarga">
-              <i class="fa-solid fa-circle-check"></i> Listo
-            </span>
-          </div>
-
-          <!-- Tabla -->
-          <div style="padding: 0 25px; overflow-x: auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Fecha</th>
-                  <th>Tipo</th>
-                  <th>Categoría</th>
-                  <th>Título</th>
-                  <th>Ubicación</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbodyInc">
-                <tr>
-                  <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
-                    Usa "Buscar" para cargar incidencias
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p id="msgLista" class="muted" style="padding: 10px 25px;"></p>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- Modal para detalles -->
-  <div id="modalDetalle">
-    <div id="modalCard">
-      <div id="modalHeader">
-        <h3 id="modalTitle">Detalle de incidencia</h3>
-        <button id="modalClose">Cerrar</button>
-      </div>
-      <hr style="margin:12px 0;">
-      <div id="modalBody"></div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="../js/supabase.js"></script>
-  <script src="../js/lista_incidencias.js"></script>
-</body>
-</html>
+})(); // Fin de la IIFE
