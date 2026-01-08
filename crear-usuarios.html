@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crear Usuarios de Prueba</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { color: #8b0000; text-align: center; }
+    .user-card { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #8b0000; }
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+    button { background: #8b0000; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 10px 5px; }
+    button:hover { background: #7a0000; }
+    .loading { color: #666; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Crear Usuarios de Prueba</h1>
+    <p>Crea usuarios automáticamente en Supabase Authentication</p>
+    
+    <div id="resultados"></div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <button onclick="crearUsuariosPrueba()">
+        <i class="fas fa-user-plus"></i> Crear 3 Usuarios de Prueba
+      </button>
+      
+      <button onclick="crearUsuarioManual()" style="background: #28a745;">
+        <i class="fas fa-plus"></i> Crear Usuario Personalizado
+      </button>
+      
+      <button onclick="verUsuarios()" style="background: #17a2b8;">
+        <i class="fas fa-eye"></i> Ver Usuarios Existentes
+      </button>
+    </div>
+    
+    <div id="usuarioManual" style="display: none; background: #e9ecef; padding: 20px; border-radius: 8px; margin-top: 20px;">
+      <h3>Crear Usuario Manual</h3>
+      <input type="email" id="manualEmail" placeholder="Email" style="padding: 10px; width: 100%; margin: 5px 0;">
+      <input type="password" id="manualPassword" placeholder="Contraseña" style="padding: 10px; width: 100%; margin: 5px 0;">
+      <input type="text" id="manualNombre" placeholder="Nombre completo" style="padding: 10px; width: 100%; margin: 5px 0;">
+      <select id="manualTipo" style="padding: 10px; width: 100%; margin: 5px 0;">
+        <option value="ciudadano">Ciudadano</option>
+        <option value="policia">Policía</option>
+        <option value="administrador">Administrador</option>
+      </select>
+      <button onclick="crearUsuarioDesdeForm()" style="background: #8b0000; width: 100%;">
+        <i class="fas fa-save"></i> Crear Usuario
+      </button>
+    </div>
+    
+    <div id="listaUsuarios" style="margin-top: 30px;"></div>
+  </div>
+
+  <!-- FontAwesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <script>
+    // ================= CONFIGURACIÓN =================
+    const SUPABASE_URL = 'https://grchvnewfkakaqfkgbzy.supabase.co';
+    const SUPABASE_KEY = 'TU_ANON_KEY_AQUI'; // Reemplaza con tu clave real
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // ================= FUNCIÓN PRINCIPAL =================
+    async function crearUsuariosPrueba() {
+      const resultadosDiv = document.getElementById('resultados');
+      resultadosDiv.innerHTML = '<p class="loading">Creando usuarios...</p>';
+      
+      const usuarios = [
+        { 
+          email: 'ciudadano@cuscoreporta.com', 
+          password: 'Test123456', 
+          nombre: 'Juan Pérez García',
+          tipo: 'ciudadano'
+        },
+        { 
+          email: 'policia@cuscoreporta.com', 
+          password: 'Policia123', 
+          nombre: 'Oficial de Tránsito',
+          tipo: 'policia'
+        },
+        { 
+          email: 'admin@cuscoreporta.com', 
+          password: 'Admin123456', 
+          nombre: 'Administrador Sistema',
+          tipo: 'administrador'
+        }
+      ];
+      
+      let html = '<h3>Resultados:</h3>';
+      
+      for (const usuario of usuarios) {
+        try {
+          // Mostrar progreso
+          html += `<div class="user-card">
+                    <strong>${usuario.email}</strong> - Creando...`;
+          
+          resultadosDiv.innerHTML = html;
+          
+          // Registrar usuario en Supabase Auth
+          const { data, error } = await supabase.auth.signUp({
+            email: usuario.email,
+            password: usuario.password,
+            options: {
+              data: {
+                nombre_completo: usuario.nombre,
+                tipo_usuario: usuario.tipo
+              },
+              emailRedirectTo: window.location.origin
+            }
+          });
+          
+          if (error) {
+            // Si el usuario ya existe
+            if (error.message.includes('already registered')) {
+              html = html.replace('Creando...', 
+                `<span class="success">✅ Ya existe (puede iniciar sesión)</span><br>
+                 <small>Password: ${usuario.password} | Tipo: ${usuario.tipo}</small>`);
+            } else {
+              html = html.replace('Creando...', 
+                `<span class="error">❌ Error: ${error.message}</span>`);
+            }
+          } else {
+            html = html.replace('Creando...', 
+              `<span class="success">✅ Creado exitosamente</span><br>
+               <small>Password: ${usuario.password} | Tipo: ${usuario.tipo}</small>`);
+          }
+          
+        } catch (err) {
+          html = html.replace('Creando...', 
+            `<span class="error">❌ Error: ${err.message}</span>`);
+        }
+        
+        resultadosDiv.innerHTML = html;
+      }
+      
+      html += `<p style="margin-top: 20px; padding: 15px; background: #d4edda; color: #155724; border-radius: 5px;">
+                <i class="fas fa-check-circle"></i> 
+                <strong>Usuarios creados. Credenciales:</strong><br>
+                1. ciudadano@cuscoreporta.com / Test123456<br>
+                2. policia@cuscoreporta.com / Policia123<br>
+                3. admin@cuscoreporta.com / Admin123456
+              </p>`;
+      
+      resultadosDiv.innerHTML = html;
+      
+      // Mostrar credenciales en consola también
+      console.log('📋 Credenciales de prueba creadas:');
+      usuarios.forEach(u => {
+        console.log(`Email: ${u.email} | Password: ${u.password} | Tipo: ${u.tipo}`);
+      });
+    }
+    
+    // ================= FUNCIONES ADICIONALES =================
+    
+    function crearUsuarioManual() {
+      document.getElementById('usuarioManual').style.display = 'block';
+    }
+    
+    async function crearUsuarioDesdeForm() {
+      const email = document.getElementById('manualEmail').value;
+      const password = document.getElementById('manualPassword').value;
+      const nombre = document.getElementById('manualNombre').value;
+      const tipo = document.getElementById('manualTipo').value;
+      
+      if (!email || !password || !nombre) {
+        alert('Completa todos los campos');
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              nombre_completo: nombre,
+              tipo_usuario: tipo
+            }
+          }
+        });
+        
+        if (error) throw error;
+        
+        alert(`✅ Usuario ${email} creado exitosamente\nPassword: ${password}\nTipo: ${tipo}`);
+        
+        // Limpiar formulario
+        document.getElementById('manualEmail').value = '';
+        document.getElementById('manualPassword').value = '';
+        document.getElementById('manualNombre').value = '';
+        
+      } catch (error) {
+        alert(`❌ Error: ${error.message}`);
+      }
+    }
+    
+    async function verUsuarios() {
+      const listaDiv = document.getElementById('listaUsuarios');
+      listaDiv.innerHTML = '<p class="loading">Cargando usuarios...</p>';
+      
+      try {
+        // Obtener usuarios desde la tabla 'usuarios' (si existe)
+        const { data: usuarios, error } = await supabase
+          .from('usuarios')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        
+        if (error) {
+          // Si no existe la tabla, mostrar mensaje
+          listaDiv.innerHTML = `
+            <div style="background: #fff3cd; padding: 15px; border-radius: 5px; color: #856404;">
+              <i class="fas fa-exclamation-triangle"></i>
+              No se encontró la tabla 'usuarios'. Los usuarios se crean en Supabase Authentication.
+              <br><br>
+              <strong>Para ver usuarios creados:</strong>
+              <ol>
+                <li>Ve a <a href="https://app.supabase.com" target="_blank">Supabase Dashboard</a></li>
+                <li>Selecciona tu proyecto</li>
+                <li>Ve a: <strong>Authentication → Users</strong></li>
+              </ol>
+            </div>
+          `;
+          return;
+        }
+        
+        if (!usuarios || usuarios.length === 0) {
+          listaDiv.innerHTML = '<p>No hay usuarios registrados en la tabla.</p>';
+          return;
+        }
+        
+        let html = '<h3>Usuarios en la base de datos:</h3>';
+        html += '<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">';
+        html += '<tr style="background: #8b0000; color: white;">';
+        html += '<th style="padding: 10px; text-align: left;">Email</th>';
+        html += '<th style="padding: 10px; text-align: left;">Nombre</th>';
+        html += '<th style="padding: 10px; text-align: left;">Tipo</th>';
+        html += '<th style="padding: 10px; text-align: left;">Estado</th>';
+        html += '</tr>';
+        
+        usuarios.forEach(user => {
+          html += `<tr style="border-bottom: 1px solid #ddd;">`;
+          html += `<td style="padding: 10px;">${user.email}</td>`;
+          html += `<td style="padding: 10px;">${user.nombre_completo || '-'}</td>`;
+          html += `<td style="padding: 10px;">${user.tipo_usuario || 'ciudadano'}</td>`;
+          html += `<td style="padding: 10px;">${user.estado || 'activo'}</td>`;
+          html += `</tr>`;
+        });
+        
+        html += '</table>';
+        html += `<p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
+                  <i class="fas fa-info-circle"></i>
+                  Mostrando ${usuarios.length} usuarios
+                </p>`;
+        
+        listaDiv.innerHTML = html;
+        
+      } catch (error) {
+        listaDiv.innerHTML = `<p class="error">Error cargando usuarios: ${error.message}</p>`;
+      }
+    }
+    
+    // ================= INFORMACIÓN DE CONFIGURACIÓN =================
+    console.log('🔧 Herramienta de creación de usuarios');
+    console.log('📌 URL Supabase:', SUPABASE_URL);
+    console.log('📌 Para usar:');
+    console.log('1. Reemplaza TU_ANON_KEY_AQUI con tu clave real');
+    console.log('2. Guarda el archivo');
+    console.log('3. Ábrelo en el navegador');
+    console.log('4. Haz clic en "Crear 3 Usuarios de Prueba"');
+  </script>
+</body>
+</html>
