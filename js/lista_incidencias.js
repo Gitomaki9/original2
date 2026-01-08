@@ -1,8 +1,21 @@
-// lista_incidencias.js - Versión optimizada
-const $ = (id) => document.getElementById(id);
-
-// Obtener cliente de Supabase
-const supabase = window.supabaseClient;
+// lista_incidencias.js - NO declarar const supabase al inicio
+document.addEventListener('DOMContentLoaded', function() {
+    const $ = (id) => document.getElementById(id);
+    
+    // Obtener cliente de window.supabaseClient
+    const supabase = window.supabaseClient; // ← SOLO ASIGNACIÓN, NO DECLARACIÓN
+    
+    if (!supabase) {
+        console.error('❌ Error: window.supabaseClient no está definido');
+        alert('Error de configuración: Supabase no está configurado correctamente.');
+        return;
+    }
+    
+    console.log('✅ Supabase disponible:', supabase);
+    
+    // ... resto de tu código SIN cambiar ...
+    // Solo asegúrate de NO tener otra línea "const supabase = ..."
+});
 
 // Estado global
 let incidencias = [];
@@ -411,3 +424,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar incidencias iniciales
   await cargarIncidencias();
 });
+
