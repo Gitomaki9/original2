@@ -4,225 +4,581 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Iniciar Sesión - Cusco Reporta</title>
+  
+  <!-- Fuentes y estilos -->
   <link rel="stylesheet" href="../css/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Íconos FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
   <style>
-    /* Estilos adicionales para el login */
-    .login-container {
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 30px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    /* ESTILOS GENERALES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
+    body {
+      font-family: "Poppins", sans-serif;
+      background: radial-gradient(circle at top, #7b0000 0%, #3b0000 60%, #1c0000 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* NAVBAR MEJORADA */
+    .navbar {
+      background: white;
+      padding: 0 30px;
+      height: 70px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .navbar__left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .navbar__logo {
+      height: 45px;
+      width: auto;
+      object-fit: contain;
+    }
+    
+    .navbar__title {
+      font-weight: 700;
+      color: #8b0000;
+      font-size: 1.5rem;
+    }
+    
+    .navbar__menu {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+    
+    .navbar__menu a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .navbar__menu a:not(:last-child):hover {
+      background: #f8f9fa;
+      color: #8b0000;
+      transform: translateY(-2px);
+    }
+    
+    .navbar__menu a.active {
+      background: linear-gradient(135deg, #8b0000, #b22222);
+      color: white;
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+    }
+    
+    .navbar__menu a.active:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(139, 0, 0, 0.4);
+    }
+    
+    /* CONTENEDOR PRINCIPAL */
+    .page-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      min-height: calc(100vh - 70px);
+    }
+    
+    /* TARJETA DE AUTENTICACIÓN */
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* EFECTO DECORATIVO EN LA TARJETA */
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #8b0000, #b22222, #8b0000);
+      border-radius: 20px 20px 0 0;
+    }
+    
+    /* ENCABEZADO */
+    .auth-header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+    
+    .auth-header img {
+      height: 55px;
+      width: auto;
+      margin-bottom: 15px;
+      object-fit: contain;
+    }
+    
+    .auth-header h1 {
+      color: #8b0000;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    
+    .auth-header p {
+      color: #666;
+      font-size: 0.95rem;
+      font-weight: 500;
+      max-width: 300px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+    
+    /* PESTAÑAS DE LOGIN/REGISTRO */
     .login-tabs {
       display: flex;
+      background: #f8f9fa;
+      border-radius: 50px;
+      padding: 6px;
       margin-bottom: 30px;
-      border-radius: 25px;
-      overflow: hidden;
-      background: #f0f0f0;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .login-tab {
       flex: 1;
-      padding: 15px;
-      text-align: center;
-      font-weight: 600;
-      cursor: pointer;
+      padding: 14px;
       border: none;
       background: transparent;
-      font-size: 16px;
+      border-radius: 50px;
+      font-family: "Poppins", sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .login-tab i {
+      font-size: 1.1rem;
     }
     
     .login-tab.active {
-      background: #b22222;
+      background: linear-gradient(135deg, #8b0000, #b22222);
       color: white;
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.25);
     }
     
+    /* FORMULARIOS */
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
     
     .form-group label {
       display: block;
       margin-bottom: 8px;
-      font-weight: 600;
+      font-weight: 700;
       color: #333;
+      font-size: 0.95rem;
     }
     
-    .form-group input {
+    .input-with-icon {
+      position: relative;
+    }
+    
+    .input-with-icon i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8b0000;
+      font-size: 1.1rem;
+    }
+    
+    .form-input {
       width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #ddd;
-      border-radius: 25px;
-      font-size: 16px;
-      transition: border 0.3s;
+      padding: 16px 16px 16px 50px;
+      border: 2px solid #e9ecef;
+      border-radius: 14px;
+      font-family: "Poppins", sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
     }
     
-    .form-group input:focus {
-      border-color: #b22222;
+    .form-input:focus {
       outline: none;
+      border-color: #8b0000;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
     }
     
+    /* BOTÓN DE ENVÍO */
     .btn-login {
       width: 100%;
-      padding: 15px;
-      background: #b22222;
+      padding: 17px;
+      background: linear-gradient(135deg, #8b0000, #b22222);
       color: white;
       border: none;
-      border-radius: 25px;
-      font-size: 18px;
-      font-weight: 600;
+      border-radius: 14px;
+      font-family: "Poppins", sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
       margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 15px rgba(139, 0, 0, 0.25);
     }
     
     .btn-login:hover {
-      background: #8b0000;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(139, 0, 0, 0.3);
     }
     
-    .forgot-password {
-      text-align: center;
+    .btn-login:active {
+      transform: translateY(-1px);
+    }
+    
+    .btn-register {
+      background: linear-gradient(135deg, #2e7d32, #4caf50);
+      box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
+    }
+    
+    .btn-register:hover {
+      box-shadow: 0 10px 20px rgba(46, 125, 50, 0.3);
+    }
+    
+    /* ENLACES ADICIONALES */
+    .form-links {
+      display: flex;
+      justify-content: space-between;
       margin-top: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
     }
     
-    .forgot-password a {
-      color: #b22222;
+    .form-links a {
+      color: #8b0000;
       text-decoration: none;
       font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     
-    .forgot-password a:hover {
+    .form-links a:hover {
+      color: #b22222;
       text-decoration: underline;
     }
     
-    .register-prompt {
-      text-align: center;
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid #eee;
+    .form-links a i {
+      font-size: 0.9rem;
     }
     
-    .register-prompt a {
-      background: #4CAF50;
-      color: white;
-      padding: 10px 25px;
-      border-radius: 25px;
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-block;
-      margin-top: 10px;
+    /* MENSAJE DE CONFIANZA */
+    .confianza-section {
+      text-align: center;
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid #e9ecef;
+      position: relative;
     }
     
-    .confia {
-      text-align: center;
-      margin-top: 30px;
-      font-weight: 600;
-      color: #b22222;
-      font-size: 18px;
+    .confianza-section::before {
+      content: "✓";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      color: #2e7d32;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 0 15px;
+    }
+    
+    .confianza-text {
+      color: #2e7d32;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* ANIMACIONES DE TRANSICIÓN */
+    .form-container {
+      transition: all 0.4s ease;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .form-container.hidden {
+      opacity: 0;
+      transform: translateY(20px);
+      display: none;
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 20px;
+        height: 60px;
+      }
+      
+      .navbar__logo {
+        height: 40px;
+      }
+      
+      .navbar__menu {
+        gap: 15px;
+      }
+      
+      .navbar__menu a {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+      
+      .auth-card {
+        padding: 30px 25px;
+        margin: 0 15px;
+      }
+      
+      .auth-header h1 {
+        font-size: 1.7rem;
+      }
+      
+      .form-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .navbar__menu {
+        gap: 10px;
+      }
+      
+      .navbar__menu a {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+      }
+      
+      .auth-card {
+        padding: 25px 20px;
+      }
+      
+      .login-tab {
+        padding: 12px;
+        font-size: 0.9rem;
+      }
+      
+      .form-input {
+        padding: 14px 14px 14px 45px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- ======= HEADER ======= -->
+  <!-- ======= NAVBAR MEJORADA ======= -->
   <header class="navbar">
     <div class="navbar__left">
-      
       <img src="../assents/images/CuscoReporta.png" alt="Logo Cusco Reporta" class="navbar__logo">
+      <div class="navbar__title">Cusco Reporta</div>
     </div>
 
     <nav class="navbar__menu">
       <a href="/">Inicio</a>
       <a href="/registrar_tu_denuncia">Registra tu denuncia</a>
       <a href="/sobre_nosotros">Sobre nosotros</a>
-      <a href="/iniciar-sesion" style="background: #b22222; color: white; padding: 8px 16px; border-radius: 20px;">Iniciar Sesión</a>
+      <a href="/iniciar-sesion" class="active">
+        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+      </a>
       <a href="/ayuda">Ayuda</a>
     </nav>
   </header>
 
-  <!-- ======= FORMULARIO DE LOGIN ======= -->
-  <main class="main">
-    <div class="login-container">
-      <h1 style="text-align: center; color: #8b0000; margin-bottom: 30px;">INICIO DE SESIÓN</h1>
+  <!-- ======= CONTENIDO PRINCIPAL ======= -->
+  <main class="page-wrap">
+    <div class="auth-card">
+      <div class="auth-header">
+        <img src="../assents/images/CuscoReporta.png" alt="Cusco Reporta Logo">
+        <h1>INICIO DE SESIÓN</h1>
+        <p>Accede a tu cuenta para gestionar denuncias y reportes</p>
+      </div>
 
-      <!-- Tabs Login/Registro -->
+      <!-- Pestañas Login/Registro -->
       <div class="login-tabs">
-        <button class="login-tab active" id="tabLogin" onclick="mostrarLogin()">Iniciar Sesión</button>
-        <button class="login-tab" id="tabRegistro" onclick="mostrarRegistro()">Registrarse</button>
+        <button class="login-tab active" id="tabLogin" onclick="mostrarLogin()">
+          <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+        </button>
+        <button class="login-tab" id="tabRegistro" onclick="mostrarRegistro()">
+          <i class="fas fa-user-plus"></i> Registrarse
+        </button>
       </div>
 
       <!-- Formulario LOGIN -->
-      <form id="formLogin" style="display: block;">
-        <div class="form-group">
-          <label for="email">Correo Electrónico</label>
-          <input type="email" id="email" placeholder="tu@email.com" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" placeholder="Tu contraseña" required>
-        </div>
-        
-        <button type="submit" class="btn-login">Iniciar Sesión</button>
-        
-        <div class="forgot-password">
-          <a href="/recuperar_contrasena">¿Olvidaste tu contraseña?</a>
-        </div>
-      </form>
+      <div id="formLoginContainer" class="form-container">
+        <form id="formLogin">
+          <div class="form-group">
+            <label for="email">
+              <i class="fas fa-envelope"></i> Correo Electrónico
+            </label>
+            <div class="input-with-icon">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="email" class="form-input" 
+                     placeholder="ejemplo@correo.com" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">
+              <i class="fas fa-lock"></i> Contraseña
+            </label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" class="form-input" 
+                     placeholder="••••••••" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn-login">
+            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+          </button>
+          
+          <div class="form-links">
+            <a href="/recuperar_contrasena">
+              <i class="fas fa-key"></i> ¿Olvidaste tu contraseña?
+            </a>
+            <a href="/">
+              <i class="fas fa-home"></i> Volver al inicio
+            </a>
+          </div>
+        </form>
+      </div>
 
-      <!-- Formulario REGISTRO (oculto inicialmente) -->
-      <form id="formRegistro" style="display: none;">
-        <div class="form-group">
-          <label for="regNombre">Nombre Completo</label>
-          <input type="text" id="regNombre" placeholder="Juan Pérez" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="regEmail">Correo Electrónico</label>
-          <input type="email" id="regEmail" placeholder="tu@email.com" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="regPassword">Contraseña</label>
-          <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="regConfirmPassword">Confirmar Contraseña</label>
-          <input type="password" id="regConfirmPassword" placeholder="Repite tu contraseña" required>
-        </div>
-        
-        <button type="submit" class="btn-login" style="background: #4CAF50;">Crear Cuenta</button>
-        
-        <div class="register-prompt">
-          ¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin()">Inicia Sesión</a>
-        </div>
-      </form>
+      <!-- Formulario REGISTRO -->
+      <div id="formRegistroContainer" class="form-container hidden">
+        <form id="formRegistro">
+          <div class="form-group">
+            <label for="regNombre">
+              <i class="fas fa-user"></i> Nombre Completo
+            </label>
+            <div class="input-with-icon">
+              <i class="fas fa-user"></i>
+              <input type="text" id="regNombre" class="form-input" 
+                     placeholder="Juan Pérez" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="regEmail">
+              <i class="fas fa-envelope"></i> Correo Electrónico
+            </label>
+            <div class="input-with-icon">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="regEmail" class="form-input" 
+                     placeholder="ejemplo@correo.com" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="regPassword">
+              <i class="fas fa-lock"></i> Contraseña
+            </label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="regPassword" class="form-input" 
+                     placeholder="Mínimo 6 caracteres" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="regConfirmPassword">
+              <i class="fas fa-lock"></i> Confirmar Contraseña
+            </label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="regConfirmPassword" class="form-input" 
+                     placeholder="Repite tu contraseña" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn-login btn-register">
+            <i class="fas fa-user-plus"></i> Crear Cuenta
+          </button>
+          
+          <div class="form-links">
+            <a href="#" onclick="mostrarLogin()">
+              <i class="fas fa-sign-in-alt"></i> ¿Ya tienes cuenta? Inicia Sesión
+            </a>
+          </div>
+        </form>
+      </div>
 
-      <p class="confia">¡CONFÍA EN NOSOTROS!</p>
+      <!-- Mensaje de confianza -->
+      <div class="confianza-section">
+        <p class="confianza-text">¡CONFÍA EN NOSOTROS!</p>
+        <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
+          Tus datos están protegidos y seguros
+        </p>
+      </div>
     </div>
   </main>
 
   <script>
     // Funciones para cambiar entre Login y Registro
     function mostrarLogin() {
-      document.getElementById('formLogin').style.display = 'block';
-      document.getElementById('formRegistro').style.display = 'none';
+      document.getElementById('formLoginContainer').classList.remove('hidden');
+      document.getElementById('formRegistroContainer').classList.add('hidden');
       document.getElementById('tabLogin').classList.add('active');
       document.getElementById('tabRegistro').classList.remove('active');
     }
     
     function mostrarRegistro() {
-      document.getElementById('formLogin').style.display = 'none';
-      document.getElementById('formRegistro').style.display = 'block';
+      document.getElementById('formLoginContainer').classList.add('hidden');
+      document.getElementById('formRegistroContainer').classList.remove('hidden');
       document.getElementById('tabLogin').classList.remove('active');
       document.getElementById('tabRegistro').classList.add('active');
     }
     
-    // Manejo del formulario de LOGIN (sin Supabase por ahora)
+    // Manejo del formulario de LOGIN
     document.getElementById('formLogin').addEventListener('submit', function(e) {
       e.preventDefault();
       const email = document.getElementById('email').value;
@@ -230,14 +586,24 @@
       
       // Validación básica
       if (!email || !password) {
-        alert('Por favor, completa todos los campos');
+        mostrarMensaje('Por favor, completa todos los campos', 'error');
+        return;
+      }
+      
+      // Validación de email
+      if (!validarEmail(email)) {
+        mostrarMensaje('Por favor, ingresa un correo electrónico válido', 'error');
         return;
       }
       
       // Simular login (remplazar con Supabase después)
-      alert('Login simulado. Email: ' + email + '\nImplementa Supabase para autenticación real.');
-      // Redirigir a perfil después de login
-      // window.location.href = '/perfil';
+      mostrarMensaje('Iniciando sesión...', 'info');
+      
+      setTimeout(() => {
+        mostrarMensaje('Login simulado exitoso. Email: ' + email, 'success');
+        // Redirigir a perfil después de login
+        // window.location.href = '/perfil';
+      }, 1500);
     });
     
     // Manejo del formulario de REGISTRO
@@ -250,37 +616,117 @@
       
       // Validaciones
       if (!nombre || !email || !password || !confirmPassword) {
-        alert('Por favor, completa todos los campos');
+        mostrarMensaje('Por favor, completa todos los campos', 'error');
+        return;
+      }
+      
+      if (!validarEmail(email)) {
+        mostrarMensaje('Por favor, ingresa un correo electrónico válido', 'error');
         return;
       }
       
       if (password !== confirmPassword) {
-        alert('Las contraseñas no coinciden');
+        mostrarMensaje('Las contraseñas no coinciden', 'error');
         return;
       }
       
       if (password.length < 6) {
-        alert('La contraseña debe tener al menos 6 caracteres');
+        mostrarMensaje('La contraseña debe tener al menos 6 caracteres', 'error');
         return;
       }
       
-      // Simular registro (remplazar con Supabase después)
-      alert('Registro simulado exitoso:\nNombre: ' + nombre + '\nEmail: ' + email + '\n\nImplementa Supabase para registro real.');
+      // Simular registro
+      mostrarMensaje('Creando tu cuenta...', 'info');
       
-      // Después de registro, mostrar formulario de login
-      mostrarLogin();
-      document.getElementById('email').value = email;
-      document.getElementById('password').value = '';
+      setTimeout(() => {
+        mostrarMensaje(`¡Cuenta creada exitosamente!<br>Bienvenido/a ${nombre}`, 'success');
+        
+        // Después de registro, mostrar formulario de login
+        setTimeout(() => {
+          mostrarLogin();
+          document.getElementById('email').value = email;
+          document.getElementById('password').value = '';
+        }, 2000);
+      }, 1500);
     });
     
-    // Si viene de registro exitoso, mostrar mensaje
+    // Función para validar email
+    function validarEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+    
+    // Función para mostrar mensajes
+    function mostrarMensaje(mensaje, tipo = 'info') {
+      // Eliminar mensaje anterior si existe
+      const mensajeAnterior = document.querySelector('.mensaje-flotante');
+      if (mensajeAnterior) {
+        mensajeAnterior.remove();
+      }
+      
+      // Crear nuevo mensaje
+      const mensajeDiv = document.createElement('div');
+      mensajeDiv.className = `mensaje-flotante ${tipo}`;
+      mensajeDiv.innerHTML = mensaje;
+      mensajeDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        z-index: 9999;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      // Colores según tipo
+      const colores = {
+        success: '#28a745',
+        error: '#dc3545',
+        info: '#17a2b8',
+        warning: '#ffc107'
+      };
+      
+      mensajeDiv.style.backgroundColor = colores[tipo] || colores.info;
+      
+      // Agregar al documento
+      document.body.appendChild(mensajeDiv);
+      
+      // Auto-eliminar después de 4 segundos
+      setTimeout(() => {
+        mensajeDiv.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => mensajeDiv.remove(), 300);
+      }, 4000);
+    }
+    
+    // Agregar animación de salida
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Verificar si viene de registro exitoso
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('registro') === 'exitoso') {
-      alert('¡Registro exitoso! Ahora inicia sesión.');
+      mostrarLogin();
       document.getElementById('email').value = urlParams.get('email') || '';
+      mostrarMensaje('¡Registro exitoso! Ahora inicia sesión.', 'success');
     }
+    
+    // Establecer foco en el primer campo
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('email').focus();
+    });
   </script>
-  
-  <script src="../js/main.js"></script>
 </body>
 </html>
