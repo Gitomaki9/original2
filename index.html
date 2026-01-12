@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cusco Reporta – Inicio</title>
+  
+  <!-- IMPORTANTE: Cargar Supabase primero -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Tus estilos -->
   <link rel="stylesheet" href="../css/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -70,8 +75,79 @@
       </div>
     </section>
 
+    <!-- SECCIÓN DE PRUEBA (opcional, puedes quitar después) -->
+    <section id="supabase-test" style="display: none; padding: 20px; background: #f5f5f5; margin: 20px; border-radius: 10px;">
+      <h3>Prueba de Conexión Supabase</h3>
+      <p id="test-status">Probando conexión...</p>
+      <button onclick="testSupabase()">Probar conexión manualmente</button>
+    </section>
+
   </main>
 
-  <script src="../js/main.js"></script>
+  <!-- ORDEN CRÍTICO DE SCRIPTS: -->
+  <!-- 1. Supabase config -->
+  <script src="../js/supaBase.js" defer></script>
+  
+  <!-- 2. Script de prueba (opcional) -->
+  <script>
+    // Script de prueba de conexión
+    async function testSupabase() {
+      console.log('🧪 Probando conexión a Supabase...');
+      
+      const statusElement = document.getElementById('test-status');
+      
+      if (!window.supabase || window.supabase._mode === 'error') {
+        statusElement.innerHTML = '❌ Supabase no está configurado. Verifica la consola.';
+        statusElement.style.color = 'red';
+        return;
+      }
+      
+      try {
+        statusElement.innerHTML = '🔄 Conectando...';
+        statusElement.style.color = 'orange';
+        
+        // Probar autenticación
+        const { data: sessionData, error: sessionError } = await window.supabase.auth.getSession();
+        
+        if (sessionError) {
+          statusElement.innerHTML = `⚠️ Error sesión: ${sessionError.message}`;
+          statusElement.style.color = 'orange';
+        } else {
+          // Probar consulta a la base de datos
+          const { data, error } = await window.supabase
+            .from('denuncias')
+            .select('id, titulo, estado')
+            .limit(3);
+            
+          if (error) {
+            statusElement.innerHTML = `❌ Error BD: ${error.message}`;
+            statusElement.style.color = 'red';
+            console.error('Error detallado:', error);
+          } else {
+            const sessionMsg = sessionData.session ? '✅ Sesión activa' : 'ℹ️ Sin sesión activa';
+            const dataMsg = data ? `✅ ${data.length} denuncias obtenidas` : '✅ Conexión exitosa';
+            statusElement.innerHTML = `${sessionMsg}<br>${dataMsg}`;
+            statusElement.style.color = 'green';
+            
+            if (data && data.length > 0) {
+              console.log('📊 Datos de ejemplo:', data);
+            }
+          }
+        }
+      } catch (err) {
+        statusElement.innerHTML = `❌ Error inesperado: ${err.message}`;
+        statusElement.style.color = 'red';
+        console.error('Error completo:', err);
+      }
+    }
+    
+    // Probar automáticamente al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(testSupabase, 2000); // Esperar a que cargue Supabase
+    });
+  </script>
+  
+  <!-- 3. Tu main.js -->
+  <script src="../js/main.js" defer></script>
 </body>
 </html>
